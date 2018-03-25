@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml"  styleClass="body">
+    <stylesheets>
+        <URL value="@../styles/day.css" />
+    </stylesheets>
+    <TextFlow>
+        <Text fx:id="txtMonth" style="-fx-font-weight: bold" />
+        <Text fx:id="txtDay"/>
+        <Text fx:id="txtBoldDay" style="-fx-font-weight: bold" />
+    </TextFlow>
+    <VBox fx:id="appointmentPane"></VBox>
+</fx:root>
+        <!--prefWidth="${screen.visualBounds.width-500}" prefHeight="${screen.visualBounds.height}"-->

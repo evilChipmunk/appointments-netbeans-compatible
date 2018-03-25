@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<fx:root type="javafx.scene.layout.GridPane" xmlns:fx="http://javafx.com/fxml"  styleClass="body">
+    <stylesheets>
+        <URL value="@../styles/week.css" />
+    </stylesheets>
+
+    <columnConstraints>
+        <ColumnConstraints  hgrow="SOMETIMES" percentWidth="100"></ColumnConstraints>
+    </columnConstraints>
+    <!--<rowConstraints>-->
+        <!--<RowConstraints percentHeight="100"></RowConstraints>-->
+    <!--</rowConstraints>-->
+    <GridPane fx:id="dayPane">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="16" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+        </columnConstraints>
+    </GridPane>
+</fx:root>
+

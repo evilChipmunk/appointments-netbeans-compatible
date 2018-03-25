@@ -1,0 +1,34 @@
+.body{
+    -fx-border-color:  radial-gradient(radius 180%,  #2f4f4f, #4f372f);
+    -fx-border-width: 5;
+}
+
+
+.bordered-titled-title {
+    -fx-background-color: transparent;
+    -fx-translate-y: -10; /* play around with this value when changing the title font to get a vertically centered title */
+}
+
+.bordered-titled-border {
+    -fx-content-display: top;
+    /*-fx-border-insets: 20 15 15 15;*/
+    -fx-background-color: transparent;
+    -fx-border-color: darkblue;
+    -fx-border-width: 2;
+}
+
+.bordered-titled-content {
+    -fx-padding: 26 10 10 10;
+}
+
+.customerInfo {
+    -fx-padding: 20;
+}
+
+.addressBlock {
+}
+
+.customerList {
+    -fx-padding: 20;
+    /*b6607c*/
+}

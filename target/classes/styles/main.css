@@ -1,0 +1,154 @@
+.root{
+
+    display: block;
+    -fx-font-size: 11pt;
+    -fx-font-family: "Verdana";
+    /*-fx-background-color: radial-gradient(radius 180%,  lightblue, aliceblue); */
+    /*-fx-background-color:radial-gradient(radius 360%,#53626d , #5e6f7b);*/
+
+    /*-fx-background-color:*/
+            /*#090a0c,*/
+            /*linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),*/
+            /*linear-gradient(rgba(114,131,148,0.9), rgba(255,255,255,0)) ,*/
+             /*radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));*/
+
+    -fx-background-color: radial-gradient(focus-angle 0deg,
+    focus-distance 0%, center 100% 100%,
+    radius 360%, rgba(255,255,255,0) 0%, rgba(114,131,148,0.9) 70%  , #46607b 75%  ,  #244261 100%);
+
+}
+
+.fontStyle{
+    -fx-font-size: 10;
+}
+
+.headerBox{
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-alignment: center;
+}
+
+.title{
+    -fx-font-size: 25;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-text-fill:   #1c0a6a;
+
+}
+
+
+.validationWarning{
+    -fx-background-color: rgba(148, 6, 10, 0.38);
+}
+
+
+/*********************************************Button********************************/
+.appButton1{
+
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 15px;
+    -fx-border-insets: 5px;
+
+    -fx-background-insets: 5px;
+    -fx-background-radius: 1em;
+    -fx-background-color:   #cf4371;
+
+    -fx-border-radius: 1em;
+    -fx-border-color: lightblue;
+
+    /*-fx-background-color: radial-gradient(radius 230%,  #f0d4c8, #cf4371);*/
+}
+.appButton1:hover{
+    -fx-padding: 15px;
+    -fx-border-insets: 5px;
+    -fx-background-insets: 5px;
+    -fx-background-color: radial-gradient(radius 230%,#87c0d6 , rgba(28, 10, 106, 0.48));
+
+    -fx-border-color: rgba(28, 10, 106, 0.48);
+}
+
+.appButton{
+    -fx-background-color:
+            #090a0c,
+            linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),
+            linear-gradient(#20262b, #191d22),
+            radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+.appButton:hover{
+
+    -fx-background-color:
+            #cf4371,
+            linear-gradient(#cf4371 0%, #cf5a7a 20%, #cf5871 100%),
+            linear-gradient(#cf6881, #cf5962),
+            radial-gradient(center 50% 0%, radius 100%, rgba(148, 6, 10, 0.9), rgba(255,255,255,0));
+}
+
+#dark-blue {
+
+}
+.appButton Text {
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.9) , 1, 0.0 , 0 , 1 );
+}
+
+.sysMessageCloseButton{
+    -fx-font-weight: bold;
+    -fx-background-color: transparent;
+}
+
+/*************************************Text Field******************************************/
+.text-field{
+    -fx-border-radius: 18 8 8 18!important;
+
+    /*-fx-background-color: -fx-control-inner-background;*/
+    /*-fx-background-insets: 0;*/
+    /*-fx-padding: 1 3 1 3;*/
+}
+.text-field:hover{
+    -fx-background-color: rgb(250, 255, 189);
+
+}
+.text-field:focused {
+    /*-fx-focus-color: red;*/
+    -fx-background-color: rgb(251, 249, 255);
+}
+
+
+/*************************LIST VIEW*****************************************/
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    /*-fx-background-color: linear-gradient(#306fb7 0%, #143163 25%, #0a2344 75%, #34789d 100%);*/
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+
+
+    -fx-background-color: linear-gradient(#728394 0%, #546d87 25%, #3a5a7b 75%, #23496e 100%);
+
+
+
+
+
+
+}
+
+.list-cell:even { /* <=== changed to even */
+    -fx-background-color: white;
+}
+
+.list-cell:odd { /* <=== changed to odd */
+    -fx-background-color: rgba(52, 120, 157, 0.2);
+}
+
+.list-cell:filled:hover {
+    /*-fx-background-color: #0093ff;*/
+    -fx-background-color: #6098b6;
+    -fx-text-fill: white;
+}

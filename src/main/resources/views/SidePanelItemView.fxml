@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<?import javafx.stage.Screen?>
+<?import java.net.URL?>
+<?import javafx.scene.image.ImageView?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml"
+         styleClass="body" prefHeight="${screen.visualBounds.height}" >
+
+    <fx:define>
+        <Screen fx:factory="getPrimary" fx:id="screen" />
+    </fx:define>
+
+    <stylesheets>
+        <URL value="@../styles/sidepanel.css" />
+    </stylesheets>
+
+
+
+        <ImageView fx:id="imgView"
+                   fitHeight="100" fitWidth="100"
+                   pickOnBounds="true"
+                   preserveRatio="true">
+        </ImageView>
+        <Label fx:id="navLink"  styleClass="navigationLink"></Label>
+</fx:root>

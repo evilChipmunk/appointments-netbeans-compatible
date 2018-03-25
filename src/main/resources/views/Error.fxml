@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import java.net.URL?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
+
+    <stylesheets>
+        <URL value="@../styles/main.css" />
+    </stylesheets>
+    <VBox>
+
+        <ImageView fx:id="imgAmbulance" preserveRatio="true" fitHeight="125">
+            <Image url="@/images/ambulance.png"></Image>
+        </ImageView>
+        <Label wrapText="true" style="-fx-padding: 10">
+            Oh NO! Something went wrong. A team of howling monkeys has been dispatched to start fixing this problem!</Label>
+    </VBox>
+
+    <Label fx:id="lblError"  style="-fx-padding: 10"/>
+</fx:root>

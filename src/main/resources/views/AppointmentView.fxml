@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<?import application.controls.AutoCompleteTextField?>
+<?import application.controls.DateTimePicker?>
+<?import javafx.stage.Screen?>
+<fx:root type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml" fx:id="hroot"
+         styleClass="body"   prefWidth="${screen.visualBounds.width}" prefHeight="${screen.visualBounds.height}">
+    <stylesheets>
+        <URL value="@../styles/appointment.css" />
+        <URL value="@../styles/main.css" />
+    </stylesheets>
+
+    <fx:define>
+        <Screen fx:factory="getPrimary" fx:id="screen" />
+    </fx:define>
+
+    <center>
+        <Label styleClass="headerBox">Appointment</Label>
+        <GridPane  styleClass="appointmentFields"   prefWidth="${hroot.width*0.95}" prefHeight="${hroot.height}"  >
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES"></ColumnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES"></ColumnConstraints>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+                <RowConstraints vgrow="SOMETIMES"></RowConstraints>
+            </rowConstraints>
+
+        <Label>Customers:</Label>
+        <AutoCompleteTextField fx:id="autoCustomers" GridPane.columnIndex="1" GridPane.rowIndex="0" ></AutoCompleteTextField>
+
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="1">Title:</Label>
+        <TextField fx:id="txtTitle" GridPane.columnIndex="1" GridPane.rowIndex="1" ></TextField>
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="2">Description:</Label>
+        <TextField fx:id="txtDescription" GridPane.columnIndex="1" GridPane.rowIndex="2" ></TextField>
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="3">Location:</Label>
+        <TextField fx:id="txtLocation" GridPane.columnIndex="1" GridPane.rowIndex="3" ></TextField>
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="4">Contact:</Label>
+        <TextField fx:id="txtContact" GridPane.columnIndex="1" GridPane.rowIndex="4" ></TextField>
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="5">URL:</Label>
+        <TextField fx:id="txtURL" GridPane.columnIndex="1" GridPane.rowIndex="5" ></TextField>
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="6">Start:</Label>
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="6">
+                <DateTimePicker fx:id="startPicker"></DateTimePicker>
+                <ComboBox fx:id="cboStartTime"></ComboBox>
+            </HBox>
+
+
+        <Label  GridPane.columnIndex="0" GridPane.rowIndex="7">End:</Label>
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="7">
+                <DateTimePicker fx:id="endPicker"  ></DateTimePicker>
+                <ComboBox fx:id="cboEndTime"></ComboBox>
+            </HBox>
+            <HBox  alignment="BOTTOM_RIGHT"  GridPane.columnIndex="1" GridPane.rowIndex="8">
+                <Button fx:id="btnDelete" onAction="#delete" styleClass="appButton">Delete</Button>
+                <Button fx:id="btnSave" onAction="#save" styleClass="appButton">Save</Button>
+
+            </HBox>
+        </GridPane>
+    </center>
+</fx:root>
+

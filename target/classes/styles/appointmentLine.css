@@ -1,0 +1,33 @@
+.body{
+    -fx-border-radius: 8 8 8 8;
+    -fx-background-radius: 8 8 8 8;
+
+    -fx-padding: 0, 1, 0, 0;
+    -fx-background-color: radial-gradient(radius 180%,  lightblue, aliceblue);
+    -fx-border-color: lightblue;
+    -fx-border-width: 2;
+    /*-fx-text-fill: radial-gradient(radius 180%, burlywood, darkblue);*/
+}
+
+.invalidData{
+
+    -fx-background-color: radial-gradient(radius 180%, #cf5871, rgba(148, 6, 10, 0.39))!important;
+    -fx-border-color: radial-gradient(radius 180%,  #cf5871, rgba(148, 6, 10, 0.39));
+}
+
+
+.body:hover {
+    /*-fx-background-color: #9ACD32;*/
+    -fx-background-color: lightblue;
+}
+
+.tooltip {
+    -fx-background: rgba(30,30,30, 30);
+    -fx-text-fill: white;
+    -fx-background-color: rgba(30,30,30,0.8);
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
+    -fx-font-size: 0.85em;
+}

@@ -1,0 +1,15 @@
+.body {
+    -fx-padding: 1;
+    -fx-spacing: 5;
+    -fx-width: 10%;
+    -fx-border-color: lightblue;
+    -fx-border-width: 1; 
+}
+
+.currentMonth{
+    -fx-background-color: white;
+}
+
+.otherMonth{
+    -fx-background-color: #f6f6f6;
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<?import java.net.URL?>
+<?import javafx.stage.Screen?>
+<fx:root type="javafx.scene.layout.GridPane" xmlns:fx="http://javafx.com/fxml" styleClass="body"  >
+    <fx:define>
+        <Screen fx:factory="getPrimary" fx:id="screen" />
+    </fx:define>
+    <stylesheets>
+        <URL value="@../styles/month.css" />
+    </stylesheets>
+    <GridPane fx:id="monthGrid">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="16" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+            <ColumnConstraints percentWidth="14" hgrow="SOMETIMES" ></ColumnConstraints>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints prefHeight="50" fx:id="rowHeader" vgrow="NEVER" ></RowConstraints>
+            <RowConstraints percentHeight="90"></RowConstraints>
+        </rowConstraints>
+
+        <Label fx:id="lblSunday" styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="0" >Sunday</Label>
+        <Label fx:id="lblMonday"  styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="1">Monday</Label>
+        <Label fx:id="lblTuesday"  styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="2">Tuesday</Label>
+        <Label fx:id="lblWednesday"  styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="3">Wednesday</Label>
+        <Label fx:id="lblThursday"  styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="4">Thursday</Label>
+        <Label fx:id="lblFriday"  styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="5">Friday</Label>
+        <Label fx:id="lblSaturday"  styleClass="dayHeading"  GridPane.rowIndex="0" GridPane.columnIndex="6">Saturday</Label>
+
+        <GridPane fx:id="weekPane" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="7" ></GridPane>
+    </GridPane>
+
+</fx:root>
+
+

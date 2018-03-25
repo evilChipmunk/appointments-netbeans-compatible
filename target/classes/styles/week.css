@@ -1,0 +1,6 @@
+.body {
+    -fx-background-color: lightblue;
+    -fx-padding: 1;
+    -fx-spacing: 1;
+    -fx-width: 100%; 
+}

@@ -1,0 +1,40 @@
+.body {
+    /*-fx-background-color: #2f4f4f;*/
+    -fx-background-color: #244261;
+    -fx-padding: 5;
+}
+
+.calendarNav {
+}
+
+.calendarNavLink{
+    -fx-text-fill: white!important;
+    -fx-font-weight: bold;
+    -fx-underline: false;
+    -fx-font-size: 16;
+    -fx-alignment: center;
+    -fx-padding: 10, 0, 0, 20;
+
+}
+
+.leftNav {
+    /*-fx-image: url('/images/light-arrow-alt-circle-left.png');*/
+    /*-fx-image: url("/images/light-arrow-alt-circle-left.png");*/
+}
+
+
+.leftNav:hover {
+    /*-fx-image: url('/images/arrow-alt-circle-left.png');*/
+    /*-fx-image: url('/images/arrow-alt-circle-left.png');*/
+}
+
+
+.rightNav {
+    /*-fx-image: url('/images/light-arrow-alt-circle-right.png');*/
+    /*-fx-image: url('/images/light-arrow-alt-circle-right.png');*/
+}
+
+.rightNav:hover {
+    /*-fx-image: url('/images/arrow-alt-circle-right.png');*/
+    /*-fx-image: url('/images/arrow-alt-circle-right.png');*/
+}

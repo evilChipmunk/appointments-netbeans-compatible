@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<?import java.net.URL?>
+<?import javafx.stage.Screen?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" styleClass="body" prefWidth="${screen.visualBounds.width}" prefHeight="${screen.visualBounds.height}">
+
+    <fx:define>
+        <Screen fx:factory="getPrimary" fx:id="screen" />
+    </fx:define>
+    <stylesheets>
+        <URL value="@../styles/login.css" />
+    </stylesheets>
+
+    <HBox alignment="TOP_CENTER">
+        <ImageView preserveRatio="true" fitHeight="150">
+            <Image url="@/images/users.png"></Image>
+        </ImageView>
+    </HBox>
+    <GridPane styleClass="loginFields">
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="100" prefWidth="100" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+        <Label fx:id="lblUserName" visible="false"></Label>
+        <TextField fx:id="txtUserName" GridPane.rowIndex="0" GridPane.columnIndex="1"
+            onKeyPressed="#userName"  ></TextField>
+
+        <Label fx:id="lblPassword" GridPane.rowIndex="1" GridPane.columnIndex="0" visible="false">Password</Label>
+        <PasswordField fx:id="txtPassword" GridPane.rowIndex="1" GridPane.columnIndex="1" promptText="Password"
+                 onKeyTyped="#password"></PasswordField>
+
+    </GridPane>
+    <HBox alignment="BOTTOM_CENTER" >
+        <Button fx:id="btnRegister" onAction="#register"  styleClass="appButton">Register</Button>
+        <Button fx:id="btnLogin" onAction="#login"  styleClass="appButton">Login</Button>
+    </HBox>
+
+</fx:root>

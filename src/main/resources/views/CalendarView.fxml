@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<?import java.net.URL?>
+<?import javafx.stage.Screen?>
+
+<?import java.net.URL?>
+<?import javafx.stage.Screen?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.geometry.Insets?>
+<fx:root type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml" styleClass="body" >
+ 
+    <stylesheets>
+        <URL value="@../styles/calendar.css" />
+    </stylesheets> 
+    <center>
+        <GridPane>
+
+            <columnConstraints>
+                <ColumnConstraints fx:id="colMain" hgrow="ALWAYS" percentWidth="100"></ColumnConstraints>
+            </columnConstraints> 
+            <rowConstraints>
+                <RowConstraints></RowConstraints>
+                <RowConstraints></RowConstraints>
+            </rowConstraints>
+
+            <GridPane GridPane.rowIndex="0">
+                <columnConstraints>
+                    <ColumnConstraints  hgrow="SOMETIMES" percentWidth="50"></ColumnConstraints>
+                    <ColumnConstraints  hgrow="SOMETIMES" percentWidth="50"></ColumnConstraints>
+                </columnConstraints>
+
+                <HBox GridPane.columnIndex="0" styleClass="calendarNav" alignment="TOP_LEFT">
+                    <VBox
+                            onMouseClicked="#leftClicked"
+                            onMouseEntered="#leftEntered"
+                            onMouseExited="#leftExited">
+                        <ImageView fx:id="imgLeft" preserveRatio="true" fitHeight="50"
+                                   styleClass="leftNav"/>
+
+                    </VBox>
+                    <VBox
+                            onMouseClicked="#rightClicked"
+                            onMouseEntered="#rightEntered"
+                            onMouseExited="#rightExited">
+                        <ImageView fx:id="imgRight" preserveRatio="true" fitHeight="50"
+                                   styleClass="rightNav"/>
+
+                    </VBox>
+                    <Hyperlink fx:id="lblMonth"  onAction="#changeMonth" styleClass="calendarNavLink" ></Hyperlink>
+                </HBox>
+
+                <HBox GridPane.columnIndex="1" styleClass="calendarNav" alignment="TOP_RIGHT">
+                    <padding>
+                        <Insets  left="250"/>
+                    </padding>
+                    <Hyperlink fx:id="lblViewSelect"  onAction="#changeView" styleClass="calendarNavLink" ></Hyperlink>
+                </HBox>
+            </GridPane>
+
+            <GridPane fx:id="monthPane"  GridPane.rowIndex="1" ></GridPane>
+
+        </GridPane>
+
+    </center>
+
+</fx:root>

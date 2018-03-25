@@ -1,0 +1,16 @@
+.body{
+    -fx-background-color:radial-gradient(radius 360%,#53626d , #5e6f7b);
+
+}
+
+.label{
+    -fx-text-fill: white;
+}
+.text-field{
+    -fx-background-color: rgb(250, 255, 189);
+
+}
+
+.loginFields {
+    -fx-padding: 25px;
+}

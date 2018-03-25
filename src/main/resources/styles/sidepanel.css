@@ -1,0 +1,87 @@
+
+.body{
+    /*-fx-background-color:radial-gradient(radius 360%, #afbec9, #a6bfcc);*/
+}
+
+
+.customer{
+    -fx-spacing: 20;
+    -fx-image: url('/images/user.png');
+}
+
+.customer:hover{
+    -fx-image: url('/images/user-alt.png');
+
+}
+
+.customerImage {
+    /*-fx-background-image: url('/images/users.png');*/
+    -fx-image: url('/images/user.png');
+}
+
+.customerImage:hover {
+    /*-fx-background-image: url('/images/solid.png');*/
+    -fx-image: url('/images/user-alt.png');
+}
+
+
+.navigationLink{
+    -fx-text-fill: black;
+    -fx-underline: false;
+    /*-fx-text-decoration: none;*/
+}
+
+.calendar{
+    -fx-spacing: 20;
+}
+
+.calendarImage {
+    -fx-image: url('/images/calendar.png');
+}
+
+.calendarImage:hover {
+    /*-fx-background-image: url('/images/solid.png');*/
+    -fx-image: url('/images/calendar-alt.png');
+}
+
+.timeFrame {
+    -fx-font-size: 12;
+}
+
+.appointment{
+    -fx-spacing: 20;
+}
+.appointmentImage {
+    -fx-image: url('/images/address-card.png');
+}
+
+.appointmentImage:hover {
+    /*-fx-background-image: url('/images/solid.png');*/
+    -fx-image: url('/images/address-card-alt.png');
+}
+
+
+.report{
+    -fx-spacing: 20;
+}
+.reportImage {
+    -fx-image: url('/images/chart-bar.png');
+}
+
+.reportImage:hover {
+    /*-fx-background-image: url('/images/solid.png');*/
+    -fx-image: url('/images/chart-bar-alt.png');
+}
+
+
+.readme{
+    -fx-spacing: 20;
+}
+.readmeImage {
+    -fx-image: url('/images/readme.png');
+}
+
+.readme:hover {
+    /*-fx-background-image: url('/images/solid.png');*/
+    -fx-image: url('/images/readme-alt.png');
+}

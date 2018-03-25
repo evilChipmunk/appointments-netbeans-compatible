@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<?import javafx.stage.Screen?>
+
+
+<?import application.controls.AutoCompleteTextField?>
+<fx:root fx:id="hroot" type="javafx.scene.layout.BorderPane" xmlns:fx="http://javafx.com/fxml" styleClass="body">
+
+    <fx:define>
+        <Screen fx:factory="getPrimary" fx:id="screen" />
+    </fx:define>
+
+    <stylesheets>
+        <URL value="@../styles/customer.css" />
+    </stylesheets>
+
+    <center>
+        <Label styleClass="headerBox">Customer Information</Label>
+        <GridPane  styleClass="customerList">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" ></ColumnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" ></ColumnConstraints>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="ALWAYS"/>
+                <RowConstraints vgrow="ALWAYS"/>
+            </rowConstraints>
+
+            <ListView fx:id="lstCustomers" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+
+            <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="customerInfo"  >
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                    <RowConstraints vgrow="ALWAYS"/>
+                </rowConstraints>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Name:</Label>
+                <TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="1">Phone:</Label>
+                <TextField fx:id="txtPhone" GridPane.columnIndex="1" GridPane.rowIndex="1"></TextField>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="2">Street:</Label>
+                <TextField fx:id="txtAddress"  GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label  GridPane.columnIndex="0" GridPane.rowIndex="3">Street 2:</Label>
+                <TextField fx:id="txtAddress2"  GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                <Label   GridPane.columnIndex="0" GridPane.rowIndex="4">City</Label>
+                <AutoCompleteTextField fx:id="autoCities"   GridPane.columnIndex="1" GridPane.rowIndex="4"></AutoCompleteTextField>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="5" >Postal Code</Label>
+                <TextField fx:id="txtPostalCode"  GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+                <Label   GridPane.columnIndex="0" GridPane.rowIndex="6">Country</Label>
+                <AutoCompleteTextField fx:id="autoCountries"   GridPane.columnIndex="1" GridPane.rowIndex="6"></AutoCompleteTextField>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="7">Active:</Label>
+                <CheckBox fx:id="chkActive" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+
+            </GridPane>
+
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" alignment="BOTTOM_RIGHT">
+                <Button fx:id="btnDelete"  onAction="#delete"  styleClass="appButton">Delete</Button>
+                <Button  onAction="#add"  styleClass="appButton">Add New</Button>
+                <Button  onAction="#save"  styleClass="appButton">Save</Button>
+
+            </HBox>
+        </GridPane>
+    </center>
+
+
+</fx:root>

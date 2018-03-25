@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+
+<?import java.net.URL?>
+<?import javafx.stage.Screen?>
+<?import application.controls.SidePanelItemControl?>
+<fx:root type="javafx.scene.layout.GridPane" xmlns:fx="http://javafx.com/fxml"
+         styleClass="body" prefHeight="${screen.visualBounds.height}" >
+
+    <fx:define>
+        <Screen fx:factory="getPrimary" fx:id="screen" />
+    </fx:define>
+
+    <stylesheets>
+        <URL value="@../styles/sidepanel.css" />
+    </stylesheets>
+
+
+    <GridPane  prefWidth="180" minWidth="180" minHeight="600" maxHeight="600">
+
+        <rowConstraints>
+            <RowConstraints percentHeight="20"></RowConstraints>
+            <RowConstraints percentHeight="20"></RowConstraints>
+            <RowConstraints percentHeight="20"></RowConstraints>
+            <RowConstraints percentHeight="20"></RowConstraints>
+            <RowConstraints percentHeight="20"></RowConstraints>
+        </rowConstraints>
+
+        <SidePanelItemControl  fx:id="customerBox" GridPane.rowIndex="0"  alignment="CENTER" styleClass="customer" imageCSSPath="customerImage"
+                               linkText="View Customers" onClickAction="#customer" imagePath="user.png" imageAltPath="user-alt.png"/>
+
+        <SidePanelItemControl  fx:id="calendarBox" GridPane.rowIndex="1"  alignment="CENTER" styleClass="calendar" imageCSSPath="calendarImage"
+                               linkText="View Calendar" onClickAction="#calendar" imagePath="calendar.png" imageAltPath="calendar-alt.png"/>
+
+        <SidePanelItemControl  fx:id="appointmentBox" GridPane.rowIndex="2"  alignment="CENTER" styleClass="appointment" imageCSSPath="appointmentImage"
+                               linkText="Create Appointment" onClickAction="#appointment" imagePath="address-card.png" imageAltPath="address-card-alt.png"/>
+
+        <SidePanelItemControl  fx:id="reportBox" GridPane.rowIndex="3"  alignment="CENTER" styleClass="report" imageCSSPath="reportImage"
+                               linkText="View Reports" onClickAction="#report" imagePath="chart-bar.png" imageAltPath="chart-bar-alt.png"/>
+
+
+        <SidePanelItemControl  fx:id="readMeBox" GridPane.rowIndex="4"  alignment="CENTER" styleClass="readme" imageCSSPath="readmeImage"
+                               linkText="Evaluator's Read Me" onClickAction="#readme" imagePath="readme.png" imageAltPath="readme-alt.png"/>
+
+
+    </GridPane>
+</fx:root>
