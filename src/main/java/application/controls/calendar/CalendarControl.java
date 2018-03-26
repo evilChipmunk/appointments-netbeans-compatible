@@ -1,13 +1,9 @@
 package application.controls.calendar;
 
-import application.Configuration;
 import application.controllers.MainController;
-import application.controls.IMainPanelView;
 import application.controls.MainPanelControl;
-import application.controls.ScreenLoader;
 import application.factories.MonthControlFactory;
-import application.messaging.Commands;
-import application.messaging.IListener;
+import application.messaging.Commands; 
 import application.services.ICalendarContext;
 import application.services.IScheduler;
 import exceptions.AppointmentException;
@@ -15,171 +11,158 @@ import exceptions.ValidationException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler; 
-import javafx.scene.Node;
+import javafx.collections.ObservableList; 
 import javafx.scene.control.Hyperlink;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import javafx.scene.layout.GridPane; 
 import models.Appointment;
-
-import java.awt.event.ActionListener;
 import java.time.DayOfWeek;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class CalendarControl extends MainPanelControl implements ICalendarControl {
-    private ZonedDateTime firstDate;
-    private IMonthPart currentMonth;
-    private SortedSet<Appointment> sortedAppointments;
+
     private boolean isWeekly = false;
-    private SimpleBooleanProperty currentMonthLoaded = new SimpleBooleanProperty(false);
-    private IListener listener;
-    private Month selectedMonth;
-    private final ObservableList<IMonthPart> months;
-    private final ICalendarContext context;
-    private final IScheduler scheduler;
+    private final SimpleBooleanProperty currentMonthLoaded = new SimpleBooleanProperty(false);
+    private final ObservableList<IMonthPart> months = FXCollections.observableArrayList();
     private final MonthControlFactory monthFactory;
     private final String monthly = "View Month";
     private final String weekly = "View Week";
 
- 
-    private final GridPane monthPane = new GridPane(); 
-    private final Hyperlink lblMonth = new Hyperlink(); 
-    private final Hyperlink lblViewSelect = new Hyperlink(); 
-    private final ImageView imgLeft = new ImageView(); 
+    private final GridPane monthPane = new GridPane();
+    private final Hyperlink lblMonth = new Hyperlink();
+    private final Hyperlink lblViewSelect = new Hyperlink();
+    private final ImageView imgLeft = new ImageView();
     private final ImageView imgRight = new ImageView();
-    
+
     private final HBox header = new HBox();
     private final HBox hLeft = new HBox();
     private final HBox hRight = new HBox();
     private final VBox vLeft = new VBox();
     private final VBox vRight = new VBox();
 
+    private ZonedDateTime actualFirstDate;
+    private ZonedDateTime monthDisplayBeginningDate;
+    private ZonedDateTime monthDisplayEndingDate;
+    private IMonthPart currentMonth;
+    private SortedSet<Appointment> sortedAppointments;
+    private Month selectedMonth;
+    private final ICalendarContext context;
+    private final IScheduler scheduler;
+    private ReadOnlyObjectProperty<Bounds> mainBounds;
+    
+
     public CalendarControl(ICalendarContext context, IScheduler scheduler, MonthControlFactory monthFactory) {
         this.context = context;
         this.scheduler = scheduler;
         this.monthFactory = monthFactory;
-        months = FXCollections.observableArrayList();
-        this.firstDate = ZonedDateTime.now();
- 
+        this.actualFirstDate = ZonedDateTime.now();
+
         setupCSS();
-        
+
         setupScheduler();
- 
+
         setupImages();
-        
+
         setupImageHovers();
-        
+
         setupImageClicks();
-        
+
         setupLinkClicks();
-        
+
         setupHeader();
-        
+
         setupMainContent();
-        
+
         lblViewSelect.setText(weekly);
- 
-        lblMonth.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                changeMonthAction(event.getScreenX(), event.getScreenY());
-            }
-        });  
+
+        lblMonth.setOnMouseEntered((MouseEvent event) -> {
+            changeMonthAction(event.getScreenX(), event.getScreenY());
+        });
     }
-    
-    private void setupCSS(){
+
+    private void setupCSS() {
         this.getStylesheets().add("styles/calendar.css");
         this.getStyleClass().add("body");
-        
-//        imgLeft.getStyleClass().add("leftNav");
-//        imgRight.getStyleClass().add("rightNav");
-        
+
         hLeft.getStyleClass().add("calendarNav");
         hRight.getStyleClass().add("calendarNav");
-        
+
         hLeft.setAlignment(Pos.TOP_LEFT);
         hRight.setAlignment(Pos.TOP_RIGHT);
-        
+
         lblMonth.getStyleClass().add("calendarNavLink");
         lblViewSelect.getStyleClass().add("calendarNavLink");
     }
-    
-    private void setupScheduler(){
-         
+
+    private void setupScheduler() {
+
         scheduler.getHasAppointmentProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                appointmentScheduled(); 
+                appointmentScheduled();
             }
         });
 
         scheduler.getHasRemovalProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue){
-                appointmentRemoved(); 
+            if (newValue) {
+                appointmentRemoved();
             }
         });
     }
- 
-    private void setupImages(){ 
+
+    private void setupImages() {
         imgLeft.setImage(new Image("/images/light-arrow-alt-circle-left.png"));
         imgRight.setImage(new Image("/images/light-arrow-alt-circle-right.png"));
-        
+
         imgLeft.setPreserveRatio(true);
         imgLeft.setFitHeight(50);
-        
+
         imgRight.setPreserveRatio(true);
         imgRight.setFitHeight(50);
-         
+
     }
-    
-    private void setupImageHovers(){
-        
+
+    private void setupImageHovers() {
+
         this.vLeft.setOnMouseEntered(this::leftEntered);
-        this.vRight.setOnMouseEntered(this::rightEntered); 
-        
-        
+        this.vRight.setOnMouseEntered(this::rightEntered);
+
         this.vLeft.setOnMouseExited(this::leftExited);
-        this.vRight.setOnMouseExited(this::rightExited); 
+        this.vRight.setOnMouseExited(this::rightExited);
     }
-    
-    private void setupImageClicks(){
+
+    private void setupImageClicks() {
         this.vLeft.setOnMouseClicked(this::leftClicked);
-        this.vRight.setOnMouseClicked(this::rightClicked); 
+        this.vRight.setOnMouseClicked(this::rightClicked);
     }
-    
-    private void setupLinkClicks(){
-        
+
+    private void setupLinkClicks() {
+
         this.lblMonth.setOnAction(this::changeMonth);
-        this.lblViewSelect.setOnAction(this::changeView); 
+        this.lblViewSelect.setOnAction(this::changeView);
     }
-    
+
     private void setupHeader() {
         vLeft.getChildren().add(imgLeft);
 
         vRight.getChildren().add(imgRight);
 
-        
         Insets inset = new Insets(10);
-        
+
         hLeft.setPadding(inset);
         hLeft.getChildren().add(vLeft);
         hLeft.getChildren().add(vRight);
@@ -190,18 +173,13 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
 
         header.getChildren().add(hLeft);
         header.getChildren().add(hRight);
-        
+
         this.setTop(header);
     }
-    
-    private void setupMainContent(){
+
+    private void setupMainContent() {
         this.setCenter(monthPane);
     }
-
-    public void addListener(IListener listener){
-        this.listener = listener;
-    }
-
 
     @Override
     public ICalendarControl getCalendar() {
@@ -209,13 +187,8 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
     }
 
     @Override
-    public ZonedDateTime getFirstDate() {
-        return firstDate;
-    }
-
- 
-    private void setFirstDate(ZonedDateTime date){
-        this.firstDate = date;
+    public ZonedDateTime getActualFirstDate() {
+        return actualFirstDate;
     }
 
     @Override
@@ -235,106 +208,79 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
     }
 
     @Override
-    public int getNumberOfWeeks(){
-        if (isWeekly){
+    public int getNumberOfWeeks() {
+        if (isWeekly) {
             return 1;
         }
         //this controls how many weeks are visible on the screen
         return 5;
     }
 
-
- 
-    public void leftEntered(MouseEvent event){
+    public void leftEntered(MouseEvent event) {
         imgLeft.setImage(new Image("/images/arrow-alt-circle-left.png"));
     }
 
- 
-    public void leftExited(MouseEvent event){
+    public void leftExited(MouseEvent event) {
         imgLeft.setImage(new Image("/images/light-arrow-alt-circle-left.png"));
     }
 
- 
-    public void rightEntered(MouseEvent event){
+    public void rightEntered(MouseEvent event) {
         imgRight.setImage(new Image("/images/arrow-alt-circle-right.png"));
     }
 
- 
-    public void rightExited(MouseEvent event){
+    public void rightExited(MouseEvent event) {
         imgRight.setImage(new Image("/images/light-arrow-alt-circle-right.png"));
     }
-
-//    private void setUpImageHovers(ImageView imgView, String path, String altPath){
-//
-//        imgView.onMouseEnteredProperty().addListener((observable, oldValue, newValue) -> {
-//            imgView.setImage(null);
-//            imgView.setImage(new Image(altPath));
-//        });
-//
-//        imgView.onMouseExitedProperty().addListener((observable, oldValue, newValue) -> {
-//            imgView.setImage(null);
-//            imgView.setImage(new Image(path));
-//        });
-//    }
-
  
     public void changeMonth(javafx.event.ActionEvent event) {
 
         changeMonthAction(0, 0);
     }
 
-    private void changeMonthAction(double x, double y){
+    private void changeMonthAction(double x, double y) {
 
         this.listener.actionPerformed(Commands.monthPickerShown, x, y);
     }
 
-   
     public void changeView(javafx.event.ActionEvent event) throws AppointmentException {
 
-        isWeekly =lblViewSelect.getText().equals(weekly);
+        isWeekly = lblViewSelect.getText().equals(weekly);
 
-        if (isWeekly){
+        if (isWeekly) {
             lblViewSelect.setText(monthly);
-            AddMonth(this.firstDate);
-        }
-        else{
+            AddMonth(this.actualFirstDate);
+        } else {
             lblViewSelect.setText(weekly);
-            AddMonth(this.firstDate);
+            AddMonth(this.actualFirstDate);
         }
     }
 
- 
-    public void  leftClicked(MouseEvent event) throws AppointmentException {
+    public void leftClicked(MouseEvent event) throws AppointmentException {
 
-        if (this.isWeekly){
-            this.firstDate = this.firstDate.minusWeeks(1);
-            AddMonth(this.firstDate);
-        }
-        else{
-            this.firstDate = this.firstDate.minusMonths(1);
-            AddMonth(this.firstDate);
+        if (this.isWeekly) {
+            this.actualFirstDate = this.actualFirstDate.minusWeeks(1);
+            navigateWeek(this.actualFirstDate);
+        } else {
+            this.actualFirstDate = this.actualFirstDate.minusMonths(1);
+            AddMonth(this.actualFirstDate);
         }
     }
 
- 
-    public void  rightClicked(MouseEvent event) throws AppointmentException {
+    public void rightClicked(MouseEvent event) throws AppointmentException {
 
-        if (this.isWeekly){
-            this.firstDate = this.firstDate.plusWeeks(1);
-            AddMonth(this.firstDate);
-        }
-        else{
-            this.firstDate = this.firstDate.plusMonths(1);
-            AddMonth(this.firstDate);
+        if (this.isWeekly) {
+            this.actualFirstDate = this.actualFirstDate.plusWeeks(1);
+            navigateWeek(this.actualFirstDate);
+        } else {
+            this.actualFirstDate = this.actualFirstDate.plusMonths(1);
+            AddMonth(this.actualFirstDate);
         }
     }
-
 
     private void appointmentScheduled() {
 
-                
         IDayPart dayChanged = null;
-        
+
         Appointment appointment = scheduler.getAppointment();
 
         boolean wasAdded = false;
@@ -366,7 +312,7 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
                     for (IDayPart day : week.getDayParts()) {
                         if (day.schedulesForThisDay(appointment.getStart())) {
                             day.addAppointment(appointment);
-                            dayChanged = day; 
+                            dayChanged = day;
                             break;
                         }
                     }
@@ -374,15 +320,13 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
             }
         }
 
-        if (dayChanged != null) { 
+        if (dayChanged != null) {
             DayControl control = (DayControl) dayChanged;
-            Platform.runLater(() -> { 
+            Platform.runLater(() -> {
                 control.requestFocus();
                 control.layout();
                 this.requestFocus();
                 this.layout(); 
-//                Alert alert = new Alert(AlertType.CONFIRMATION, "added");
-//                alert.show();
             });
         }
     }
@@ -390,51 +334,102 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
     private void appointmentRemoved() {
         Appointment appointment = scheduler.getRemovedAppointment();
 
-                
         IDayPart dayChanged = null;
         for (IMonthPart month : months) {
             for (IWeekPart week : month.getWeekParts()) {
                 for (IDayPart day : week.getDayParts()) {
                     if (day.hasAppointment(appointment)) {
                         day.removeAppointment(appointment);
-                        dayChanged = day; 
+                        dayChanged = day;
                     }
                 }
             }
         }
 
-        if (dayChanged != null) { 
+        if (dayChanged != null) {
             DayControl control = (DayControl) dayChanged;
-            Platform.runLater(() -> { 
+            Platform.runLater(() -> {
                 control.requestFocus();
                 control.layout();
                 this.requestFocus();
                 this.layout(); 
-                
-//                Alert alert = new Alert(AlertType.CONFIRMATION, "removed");
-//                alert.show();
             });
         }
     }
 
-    public void AddMonth(ZonedDateTime date) throws ValidationException, AppointmentException {
+    private ZonedDateTime getFloorDate(ZonedDateTime date){
+        
+        return ZonedDateTime.of(date.getYear(), 
+                date.getMonthValue(), 
+                date.getDayOfMonth(), 0, 0, 0, 0, ZoneId.systemDefault());
+    }
 
-        setFirstDate(date);
-        if (isWeekly) {
-            while (!firstDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-                firstDate = firstDate.minusDays(1);
-            }
-        } else {
-            while (firstDate.getDayOfMonth() != 1) {
-                firstDate = firstDate.minusDays(1);
-            }
+    private ZonedDateTime getActualMonthStartDate(ZonedDateTime date) {
+
+        ZonedDateTime monthStart = date;
+        monthStart = monthStart.with(TemporalAdjusters.firstDayOfMonth());
+        return monthStart;
+    }
+
+    private ZonedDateTime getMonthDisplayBeginningDate(ZonedDateTime actualStartDate) {
+
+        ZonedDateTime monthStart = actualStartDate;
+        monthStart = monthStart.with(TemporalAdjusters.firstDayOfMonth());
+        while (monthStart.getDayOfWeek() != DayOfWeek.SUNDAY) {
+            monthStart = monthStart.minusDays(1);
+        }
+        return monthStart;
+    }
+
+    private ZonedDateTime getMonthDisplayEndingDate(ZonedDateTime date) {
+
+        ZonedDateTime monthStart = date;
+        monthStart = monthStart.with(TemporalAdjusters.lastDayOfMonth());
+        while (monthStart.getDayOfWeek() != DayOfWeek.SATURDAY) {
+            monthStart = monthStart.plusDays(1);
+        }
+        return monthStart;
+    }
+
+    private ZonedDateTime getAppointmentLastDate(ZonedDateTime startingDate, ZonedDateTime endingDate) {
+
+        ZonedDateTime appEndDate = endingDate;
+  
+        while (appEndDate.getDayOfWeek() != DayOfWeek.SATURDAY) {
+            appEndDate = appEndDate.plusDays(1);
         }
 
-        selectedMonth = firstDate.getMonth();
-        ZonedDateTime appointmentFirstDate = getAppointmentsFirstDate(firstDate);
-        this.sortedAppointments = getAppointments(appointmentFirstDate, true);
+        return appEndDate;
+    }
+    
+    private ZonedDateTime getAppointmentLastDate(ZonedDateTime startingDate) {
 
-        this.lblMonth.setText(new MyDatePick(date.getYear(), date.getMonthValue()).toString());
+        ZonedDateTime appEndDate = startingDate.plusWeeks(1); 
+        
+        while (appEndDate.getDayOfWeek() != DayOfWeek.SATURDAY) {
+            appEndDate = appEndDate.plusDays(1);
+        }
+
+        return appEndDate;
+    }
+
+
+    @Override
+    public void AddMonth(ZonedDateTime date) throws ValidationException, AppointmentException {
+
+        date = getFloorDate(date);
+        actualFirstDate = getActualMonthStartDate(date);
+        selectedMonth = actualFirstDate.getMonth();
+        this.lblMonth.setText(new MyDatePick(actualFirstDate.getYear(), actualFirstDate.getMonthValue()).toString());
+        
+        monthDisplayBeginningDate = getMonthDisplayBeginningDate(date);
+        monthDisplayEndingDate = getMonthDisplayEndingDate(date);
+
+        ZonedDateTime appointmentFirstDate = monthDisplayBeginningDate;
+        ZonedDateTime appointmentLastDate = getAppointmentLastDate(appointmentFirstDate, monthDisplayEndingDate);
+
+        this.sortedAppointments = getAppointments(appointmentFirstDate, appointmentLastDate);
+
         MonthControl monthControl = monthFactory.build(sortedAppointments, appointmentFirstDate, getNumberOfWeeks(), this);
         currentMonth = monthControl;
         currentMonthLoaded.setValue(true);
@@ -442,7 +437,7 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
 
         this.setCenter(null);
         this.setCenter(monthControl);
-        
+
         //I don't want to pass this in through the AddMonth method
         //and the setContentSize that passes in the bounds isn't called
         //until after the AddMonth method is called. Need a better way but 
@@ -451,70 +446,69 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
 
         monthControl.setContentSize(bounds.getWidth(), bounds.getHeight());
 
-
     }
     
-    private SortedSet<Appointment> getAppointments(ZonedDateTime appointmentFirstDate, boolean isMonthly) throws AppointmentException {
-  
-        ZonedDateTime endingDate;
-        if (isMonthly) {
-            endingDate = appointmentFirstDate.plusMonths(1);
-        } else {
-            endingDate = appointmentFirstDate.plusWeeks(1);
-        }
-        while (endingDate.getDayOfWeek() != DayOfWeek.SATURDAY) {
-            endingDate = endingDate.plusDays(1);
-        }
-        ArrayList<Appointment> appointments = context.getMonthlyAppointments(appointmentFirstDate, endingDate);
+    private void navigateWeek(ZonedDateTime date){
+          
+        date = getFloorDate(date);
+        selectedMonth = actualFirstDate.getMonth();  
+        this.lblMonth.setText(new MyDatePick(actualFirstDate.getYear(), actualFirstDate.getMonthValue()).toString());
+
+        ZonedDateTime appointmentFirstDate = actualFirstDate;
+        ZonedDateTime appointmentLastDate = getAppointmentLastDate(appointmentFirstDate);
+
+        this.sortedAppointments = getAppointments(appointmentFirstDate, appointmentLastDate);
+
+        MonthControl monthControl = monthFactory.build(sortedAppointments, appointmentFirstDate, getNumberOfWeeks(), this);
+        currentMonth = monthControl;
+        currentMonthLoaded.setValue(true);
+        months.add(currentMonth);
+
+        this.setCenter(null);
+        this.setCenter(monthControl);
+
+        //I don't want to pass this in through the AddMonth method
+        //and the setContentSize that passes in the bounds isn't called
+        //until after the AddMonth method is called. Need a better way but 
+        //this works for now
+        Bounds bounds = MainController.getInstance().getMainPanelBoundsProperty().get();
+
+        monthControl.setContentSize(bounds.getWidth(), bounds.getHeight());
+    }
+
+    private SortedSet<Appointment> getAppointments(ZonedDateTime startingDate, ZonedDateTime endingDate) throws AppointmentException {
+
+        ArrayList<Appointment> appointments = context.getMonthlyAppointments(startingDate, endingDate);
         appointments.sort(Comparator.naturalOrder());
-        return new TreeSet<>(appointments); 
+        return new TreeSet<>(appointments);
     }
-
-    private ZonedDateTime getAppointmentsFirstDate(ZonedDateTime firstDate)  {
-
-        ZonedDateTime appointmentFirstDate = firstDate;
-
-        while (appointmentFirstDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
-            appointmentFirstDate = appointmentFirstDate.minusDays(1);
-        } 
-        return appointmentFirstDate;
-    }
-
-    public Stage getStage(){
-        return (Stage) this.getScene().getWindow();
-    }
-    
+ 
     @Override
     public Month getSelectedMonth() {
         return selectedMonth;
     }
  
-    
-    private ReadOnlyObjectProperty<Bounds> mainBounds;
     @Override
     public void setContentSize(ReadOnlyObjectProperty<Bounds> readOnlyBounds) {
-  
-       mainBounds = readOnlyBounds;
-       
+
+        mainBounds = readOnlyBounds;
+
         {
-        Bounds bounds = readOnlyBounds.get();
+            Bounds bounds = readOnlyBounds.get();
             double width = bounds.getWidth();
             double height = bounds.getHeight();
- 
-            MonthControl monthControl = (MonthControl)currentMonth;
+
+            MonthControl monthControl = (MonthControl) currentMonth;
             monthControl.setPrefHeight(this.getHeight());
             monthControl.setPrefWidth(this.getWidth());
             currentMonth.setContentSize(width, height);
         }
-        
-        
-                
-            
-           readOnlyBounds.addListener((observable, oldValue, newValue) -> {
+
+        readOnlyBounds.addListener((observable, oldValue, newValue) -> {
 
             double width = newValue.getWidth();
             double height = newValue.getHeight();
-            MonthControl monthControl = (MonthControl)currentMonth;
+            MonthControl monthControl = (MonthControl) currentMonth;
             monthControl.setPrefHeight(this.getHeight());
             monthControl.setPrefWidth(this.getWidth());
             monthControl.setContentSize(width, height);
@@ -526,5 +520,3 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
-
-

@@ -19,8 +19,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import models.Appointment;
-
-import java.awt.event.ActionListener;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,10 +26,11 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
 
 public class ReportControl extends MainPanelControl {
+
     private final IReportContext reportContext;
     private final IApplicationState state;
 
-    public ReportControl(IReportContext reportContext, IApplicationState state){
+    public ReportControl(IReportContext reportContext, IApplicationState state) {
 
         this.reportContext = reportContext;
         this.state = state;
@@ -40,10 +39,8 @@ public class ReportControl extends MainPanelControl {
 
     }
 
-
     @FXML
-    public void initialize(){
- 
+    public void initialize() {
 
         Label label = new Label();
         label.setText("Select Report: ");
@@ -61,14 +58,20 @@ public class ReportControl extends MainPanelControl {
         cboReports.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (newValue == "Appointments By Month"){
-                    loadAppointmentsByMonth();
-                }
-                else if(newValue == "Consultant Schedule"){
-                    loadConsultantSchedule();
-                }
-                else{
+                if (null == newValue) {
                     loadAppointmentCountByConsultant();
+                } else {
+                    switch (newValue) {
+                        case "Appointments By Month":
+                            loadAppointmentsByMonth();
+                            break;
+                        case "Consultant Schedule":
+                            loadConsultantSchedule();
+                            break;
+                        default:
+                            loadAppointmentCountByConsultant();
+                            break;
+                    }
                 }
             }
         });
@@ -79,23 +82,23 @@ public class ReportControl extends MainPanelControl {
         cboReports.getSelectionModel().select(0);
     }
 
-    private void loadAppointmentsByMonth(){
+    private void loadAppointmentsByMonth() {
 
         this.setCenter(null);
         this.setCenter(getAppointmentByMonth());
     }
 
-    private void loadConsultantSchedule(){
+    private void loadConsultantSchedule() {
         this.setCenter(null);
         this.setCenter(getConsultantSchedule());
     }
 
-    private void loadAppointmentCountByConsultant(){
+    private void loadAppointmentCountByConsultant() {
         this.setCenter(null);
         this.setCenter(getAppointmentCountByConsultant());
     }
 
-    private void createColumns(TableView tableView, ArrayList<String> columnList, boolean isSortable)   {
+    private void createColumns(TableView tableView, ArrayList<String> columnList, boolean isSortable) {
 
         final int col = columnList.size();
 
@@ -118,7 +121,7 @@ public class ReportControl extends MainPanelControl {
         return tableView;
     }
 
-    private TableView getConsultantSchedule(){
+    private TableView getConsultantSchedule() {
         TableView tableView = new TableView();
 
         createColumns(tableView, ConsultantSchedule.getColumns(), true);
@@ -129,7 +132,7 @@ public class ReportControl extends MainPanelControl {
         return tableView;
     }
 
-    private TableView getAppointmentCountByConsultant(){
+    private TableView getAppointmentCountByConsultant() {
         TableView tableView = new TableView();
 
         createColumns(tableView, AppointmentCountByConsultant.getColumns(), false);
@@ -140,20 +143,18 @@ public class ReportControl extends MainPanelControl {
         return tableView;
     }
 
-
-
-    private ObservableList<AppointmentByMonth> getAppointmentByMonthRows(){
+    private ObservableList<AppointmentByMonth> getAppointmentByMonthRows() {
 
         ObservableList<AppointmentByMonth> dataList = FXCollections.observableArrayList();
 
         SortedSet<Appointment> list = reportContext.getAppointments();
 
         Map<Month, List<Appointment>> groupedList = list.stream().collect(Collectors.groupingBy(w -> w.getStart().getMonth()));
-        for(Map.Entry<Month, List<Appointment>> entry : groupedList.entrySet()){
+        for (Map.Entry<Month, List<Appointment>> entry : groupedList.entrySet()) {
             Month month = entry.getKey();
             List<Appointment> apps = entry.getValue();
 
-            for (Appointment app: apps){
+            for (Appointment app : apps) {
                 dataList.add(new AppointmentByMonth(app));
             }
         }
@@ -161,13 +162,13 @@ public class ReportControl extends MainPanelControl {
         return dataList;
     }
 
-    private ObservableList<ConsultantSchedule> getConsultantAppointmentsRows(){
+    private ObservableList<ConsultantSchedule> getConsultantAppointmentsRows() {
 
         ObservableList<ConsultantSchedule> dataList = FXCollections.observableArrayList();
 
         SortedSet<Appointment> list = reportContext.getAppointments();
-        for (Appointment app: list){
-            if (state.getLoggedInUser().getName().equals(app.getAudit().getCreatedBy())){
+        for (Appointment app : list) {
+            if (state.getLoggedInUser().getName().equals(app.getAudit().getCreatedBy())) {
                 dataList.add(new ConsultantSchedule(app));
             }
         }
@@ -175,31 +176,31 @@ public class ReportControl extends MainPanelControl {
         return dataList;
     }
 
-    private ObservableList<AppointmentCountByConsultant> getAppointmentCountByConsultantRows(){
+    private ObservableList<AppointmentCountByConsultant> getAppointmentCountByConsultantRows() {
 
         ObservableList<AppointmentCountByConsultant> dataList = FXCollections.observableArrayList();
 
         SortedSet<Appointment> list = reportContext.getAppointments();
-        Map<String, List<Appointment>> consultantList =
-                list.stream().collect(Collectors.groupingBy(w -> w.getAudit().getCreatedBy()));
+        Map<String, List<Appointment>> consultantList
+                = list.stream().collect(Collectors.groupingBy(w -> w.getAudit().getCreatedBy()));
 
-        for(Map.Entry<String, List<Appointment>> conMap: consultantList.entrySet()){
+        for (Map.Entry<String, List<Appointment>> conMap : consultantList.entrySet()) {
             String consultant = conMap.getKey();
             int total = conMap.getValue().size();
             dataList.add(new AppointmentCountByConsultant(consultant, total));
 
-            Map<Integer, List<Appointment>> yearList =
-                    conMap.getValue().stream().collect(Collectors.groupingBy(w -> w.getStart().getYear()));
+            Map<Integer, List<Appointment>> yearList
+                    = conMap.getValue().stream().collect(Collectors.groupingBy(w -> w.getStart().getYear()));
 
-            for(Map.Entry<Integer, List<Appointment>> yearMap: yearList.entrySet()){
+            for (Map.Entry<Integer, List<Appointment>> yearMap : yearList.entrySet()) {
                 int year = yearMap.getKey();
                 int yearTotal = yearMap.getValue().size();
 
                 dataList.add(new AppointmentCountByConsultant(consultant, year, yearTotal));
 
-                Map<Month, List<Appointment>> monthList =
-                        yearMap.getValue().stream().collect(Collectors.groupingBy(m -> m.getStart().getMonth()));
-                for (Map.Entry<Month, List<Appointment>> monthMap: monthList.entrySet()){
+                Map<Month, List<Appointment>> monthList
+                        = yearMap.getValue().stream().collect(Collectors.groupingBy(m -> m.getStart().getMonth()));
+                for (Map.Entry<Month, List<Appointment>> monthMap : monthList.entrySet()) {
                     Month month = monthMap.getKey();
                     int monthTotal = monthMap.getValue().size();
 
@@ -211,13 +212,9 @@ public class ReportControl extends MainPanelControl {
 
         return dataList;
     }
-    
-        
-    
+
     @Override
     public void setContentSize(ReadOnlyObjectProperty<Bounds> readOnlyBounds) {
-        
+
     }
 }
-
-

@@ -2,9 +2,7 @@ package application.logging;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDateTime;
+import java.io.IOException; 
 import java.time.ZonedDateTime;
 
 public class Logger implements ILogger{

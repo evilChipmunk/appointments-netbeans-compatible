@@ -4,8 +4,7 @@ package application.controls;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.DatePicker;
-import javafx.util.StringConverter;
-
+import javafx.util.StringConverter; 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -19,7 +18,7 @@ public class DateTimePicker extends DatePicker {
 
     private DateTimeFormatter formatter;
     private ObjectProperty<ZonedDateTime> dateTimeValue = new SimpleObjectProperty<>(ZonedDateTime.now());
-    private ObjectProperty<String> format = new SimpleObjectProperty<String>() {
+    private final ObjectProperty<String> format = new SimpleObjectProperty<String>() {
         public void set(String newValue) {
             super.set(newValue);
             formatter = DateTimeFormatter.ofPattern(newValue);

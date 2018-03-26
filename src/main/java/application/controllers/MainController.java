@@ -5,8 +5,7 @@ import application.alerts.AlertFactory;
 import application.alerts.ReminderAlertBuilder;
 import application.controls.SidePanelControl;
 import application.messaging.Commands;
-import application.Configuration;
-import application.dependencyInjection.ServiceLocator;
+import application.Configuration; 
 import application.controls.ControlFader;
 import application.controls.IMainPanelView;
 import application.controls.SystemMessageControl;
@@ -22,23 +21,17 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
+import javafx.geometry.Bounds; 
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.*; 
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import models.Reminder;
-
-import java.awt.event.ActionListener;
-import java.time.ZoneId;
+import models.Reminder; 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Optional;
-import javafx.scene.control.Alert.AlertType;
+import java.util.Optional; 
 
 public class MainController implements IListener {
 
@@ -51,21 +44,13 @@ public class MainController implements IListener {
     private boolean heightChanged;
     private double windowWidth;
     private double windowHeight;
- 
 
     @FXML
-    private SidePanelControl sidePanel;
- 
-    
+    private final SidePanelControl sidePanel;
+
     @FXML
     BorderPane borderPane;
-    
-
-    @FXML
-    private VBox vboxCalendarArea;
-
-    @FXML
-    private Label lblTimeFrame;
+ 
 
     public MainController(LoginControl login, SidePanelControl sidePanel, IReminderService reminderService, AlertFactory alertFactory, Configuration config) {
 
@@ -73,7 +58,6 @@ public class MainController implements IListener {
         this.login = login;
         this.config = config;
         this.sidePanel = sidePanel;
-        this.sidePanel.addListener(this);
 
         this.reminderService = reminderService;
         this.alertFactory = alertFactory;
@@ -82,18 +66,19 @@ public class MainController implements IListener {
 
     @FXML
     public void initialize() throws AppointmentException, ValidationException {
-  
+
         setupLogin();
+        sidePanel.addListener(this);
     }
 
-
+    @Override
     public void actionPerformed(Commands command, Object... args) {
 
         try {
             switch (command) {
                 case authenticate:
 
-                    borderPane.setLeft(sidePanel); 
+                    borderPane.setLeft(sidePanel);
                     sidePanel.showCalendar();
 
                     reminderService.getHasReminders().addListener((observable, oldValue, newValue) -> {
@@ -112,8 +97,7 @@ public class MainController implements IListener {
                                 message
                                         += rem.getAppointment().getTitle() + " with "
                                         + rem.getAppointment().getCustomer().getName() + " at "
-                                        + rem.getAppointment().getStart().format(format) + "\n";
-
+                                        + rem.getAppointment().getStart().format(format) + "\n"; 
                             }
 
                             if (message.isEmpty()) {
@@ -129,9 +113,9 @@ public class MainController implements IListener {
 
                             Optional<ButtonType> result = alert.showAndWait();
                             if (result.isPresent() && result.get() == ButtonType.OK) {
-                                for (Reminder rem : list) {
+                                list.forEach((rem) -> {
                                     reminderService.Acknowledge(rem);
-                                }
+                                });
                             }
                         }
                         );
@@ -155,7 +139,7 @@ public class MainController implements IListener {
                 case addControl:
                     addMainControl((IMainPanelView) args[0]);
                     break;
-                case monthPickerShown: 
+                case monthPickerShown:
                     if (args != null && args.length == 2) {
                         double x = (double) args[0];
                         double y = (double) args[1];
@@ -165,23 +149,22 @@ public class MainController implements IListener {
                             dialog.setLayoutX(x);
                             dialog.setLayoutY(y);
                         }
- 
-                        
+
                         ICalendarControl control = (ICalendarControl) aPane.getChildren().get(0);
-                        dialog.show(control.getFirstDate());
+                        dialog.show(control.getActualFirstDate());
                     }
                     break;
                 case monthPickerSelected:
                     if (args != null && args.length == 1) {
-                        ZonedDateTime date = (ZonedDateTime) args[0]; 
+                        ZonedDateTime date = (ZonedDateTime) args[0];
                         ICalendarControl control = (ICalendarControl) aPane.getChildren().get(0);
                         control.AddMonth(date);
-                        this.addMainControl((IMainPanelView)control); 
+                        this.addMainControl((IMainPanelView) control);
                     }
                     break;
 
             }
-        } catch (Exception ex) {
+        } catch (AppointmentException ex) {
             ErrorControl control = new ErrorControl(ex);
             control.show();
         }
@@ -215,7 +198,8 @@ public class MainController implements IListener {
         borderPane.setCenter(login);
     }
 
-      AnchorPane aPane = new AnchorPane();   
+    AnchorPane aPane = new AnchorPane();
+
     public void addMainControl(IMainPanelView view) {
 
         view.addListener(this);
@@ -234,20 +218,9 @@ public class MainController implements IListener {
         }
 
         Node nodeView = (Node) view;
-        
-        Label lbl = new Label();
-        lbl.setStyle("    -fx-text-fill: white!important;\n" +
-"    -fx-font-weight: bold;\n" +
-"    -fx-underline: false;\n" +
-"    -fx-font-size: 16;");
-        lbl.setPrefWidth(config.getMainPanelPrefWidth());
 
-       
-
-         borderPane.setTop(lbl);
-         
-            nodeView.prefWidth(config.getMainPanelPrefWidth());
-            nodeView.prefHeight(config.getMainPanelPrefHeight());
+        nodeView.prefWidth(config.getMainPanelPrefWidth());
+        nodeView.prefHeight(config.getMainPanelPrefHeight());
 
 //            StackPane stackPane = new StackPane();
 //            
@@ -257,38 +230,36 @@ public class MainController implements IListener {
 //            final DoubleProperty opacity = stackPane.opacityProperty();
 //            ControlFader fader = new ControlFader();
 //            fader.fadeInChild(nodeView, stackPane, opacity, 300);
+        AnchorPane.setTopAnchor(nodeView, 10.0);
+        AnchorPane.setLeftAnchor(nodeView, 10.0);
+        AnchorPane.setRightAnchor(nodeView, 10.0);
+        AnchorPane.setBottomAnchor(nodeView, 10.0);
+        aPane.getChildren().clear();
+        aPane.getChildren().add(nodeView);
 
-      aPane.setTopAnchor(nodeView, 10.0); 
-      aPane.setLeftAnchor(nodeView, 10.0); 
-      aPane.setRightAnchor(nodeView, 10.0); 
-      aPane.setBottomAnchor(nodeView, 10.0);
-      aPane.getChildren().clear();
-      aPane.getChildren().add(nodeView);
-      
-            aPane.prefWidth(config.getMainPanelPrefWidth());
-            aPane.prefHeight(config.getMainPanelPrefHeight());
-      
-            stage.centerOnScreen();
-            borderPane.setCenter(null);
-            borderPane.setCenter(aPane);
-         
-            
-            if (nodeView instanceof CalendarControl){
-                CalendarControl control = (CalendarControl)nodeView;
-                control.setContentSize(getMainPanelBoundsProperty());
-            }
-       getMainPanelBoundsProperty().addListener((observable, oldValue, newValue) -> { 
-             
-        double width = newValue.getWidth();
-        double height = newValue.getHeight();
- 
-             lbl.setText("width: " + width + " height: " + height );
+        aPane.prefWidth(config.getMainPanelPrefWidth());
+        aPane.prefHeight(config.getMainPanelPrefHeight());
+
+        stage.centerOnScreen();
+        borderPane.setCenter(null);
+        borderPane.setCenter(aPane);
+
+        if (nodeView instanceof CalendarControl) {
+            CalendarControl control = (CalendarControl) nodeView;
+            control.setContentSize(getMainPanelBoundsProperty());
+        }
+
+        // Label lbl = setTopLabel();
+        getMainPanelBoundsProperty().addListener((observable, oldValue, newValue) -> {
+
+            double width = newValue.getWidth();
+            double height = newValue.getHeight();
+
+            //  lbl.setText("width: " + width + " height: " + height );
         });
-        
-      
+
 //        aPane.getChildren().add(lbl);
 //        borderPane.setCenter(aPane);
-
 ////
 ////        ScrollPane scroller = new ScrollPane();
 ////        BackgroundFill fill = new BackgroundFill(Color.TRANSPARENT.brighter(), CornerRadii.EMPTY, Insets.EMPTY);
@@ -331,7 +302,17 @@ public class MainController implements IListener {
 //            borderPane.setCenter(null);
 //            borderPane.setCenter(stackPane);
 //        }
+    }
 
+    private Label setTopLabel() {
+        Label lbl = new Label();
+        lbl.setStyle("    -fx-text-fill: white!important;\n"
+                + "    -fx-font-weight: bold;\n"
+                + "    -fx-underline: false;\n"
+                + "    -fx-font-size: 16;");
+        lbl.setPrefWidth(config.getMainPanelPrefWidth());
+        borderPane.setTop(lbl);
+        return lbl;
     }
 
     private void addSystemMessage(String message) {
@@ -358,7 +339,7 @@ public class MainController implements IListener {
 
     public ReadOnlyObjectProperty<Bounds> getMainPanelBoundsProperty() {
         return aPane.layoutBoundsProperty();
-       // return borderPane.getCenter().boundsInParentProperty();
+        // return borderPane.getCenter().boundsInParentProperty();
     }
 
     public Stage getStage() {

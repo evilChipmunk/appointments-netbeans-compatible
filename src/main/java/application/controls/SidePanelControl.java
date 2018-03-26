@@ -1,17 +1,12 @@
 package application.controls;
 
-import application.controls.screens.*;
-import application.dependencyInjection.ServiceLocator;
-import application.controllers.MainController;
-import application.controls.calendar.CalendarControl;
-import application.logging.Logger;
+import application.controls.screens.*; 
+import application.controls.calendar.CalendarControl; 
 import application.messaging.Commands;
 import application.messaging.IListener;
 import exceptions.AppointmentException;
 import javafx.fxml.FXML;
-import javafx.scene.layout.GridPane;
-
-import java.awt.event.ActionListener;
+import javafx.scene.layout.GridPane; 
 import java.io.File;
 import java.net.URI;
 import java.net.URL;

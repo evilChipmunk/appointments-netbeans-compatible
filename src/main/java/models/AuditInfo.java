@@ -1,6 +1,5 @@
 package models;
-
-import java.time.LocalDateTime;
+ 
 import java.time.ZonedDateTime;
 
 public class AuditInfo
@@ -25,7 +24,7 @@ public class AuditInfo
     }
 
     public void updateAudit(String userName, ZonedDateTime date){
-        if (createdBy == "system"){
+        if ("system".equals(createdBy)){
             createdBy = userName;
             createDate = date;
         }

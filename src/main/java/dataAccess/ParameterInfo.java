@@ -1,6 +1,7 @@
 package dataAccess;
 
 public class ParameterInfo {
+
     private final String name;
     private final Object value;
 

@@ -4,6 +4,7 @@ import application.alerts.AlertContent;
 import application.alerts.AlertFactory;
 import application.alerts.AlertType;
 import application.alerts.LoginAlertBuilder;
+import application.controls.ScreenLoader;
 import application.logging.ILogger;
 import application.messaging.Commands;
 import application.messaging.IListener;
@@ -13,29 +14,23 @@ import exceptions.ValidationException;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import models.User;
 
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class LoginControl extends VBox {
 
+    private final SimpleBooleanProperty buttonEnabledProperty = new SimpleBooleanProperty(true);
     private final IUserService userService;
     private final AlertFactory factory;
     private final ILogger logger;
     private IListener listener;
-    private boolean authenticated;
     private ResourceBundle messageBundle;
-
-    private SimpleBooleanProperty buttonEnabledProperty = new SimpleBooleanProperty(true);
-
 
     @FXML
     private TextField txtUserName;
@@ -55,43 +50,50 @@ public class LoginControl extends VBox {
     @FXML
     Button btnRegister;
 
-    public LoginControl(IUserService userService, AlertFactory factory,  ILogger logger) {
+    public LoginControl(IUserService userService, AlertFactory factory, ILogger logger) {
         this.userService = userService;
         this.factory = factory;
         this.logger = logger;
 
-
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/Login.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
+        ScreenLoader.load("/views/Login.fxml", this, this);
     }
 
     @FXML
     public void initialize() {
 
+        setupBindings();
+
+        setupLanguage();
+
+        setupLabels();
+
+        this.txtUserName.setText("user");
+        this.txtPassword.setText("pass");
+    }
+
+    private void setupBindings() {
+
         btnRegister.disableProperty().bindBidirectional(buttonEnabledProperty);
         btnLogin.disableProperty().bindBidirectional(buttonEnabledProperty);
-        txtUserName.textProperty().addListener((observable, oldValue, newValue) ->
-                buttonEnabledProperty.set(newValue.isEmpty() || txtPassword.getText().isEmpty()));
+        txtUserName.textProperty().addListener((observable, oldValue, newValue)
+                -> buttonEnabledProperty.set(newValue.isEmpty() || txtPassword.getText().isEmpty()));
 
-        txtPassword.textProperty().addListener((observable, oldValue, newValue) ->
-                buttonEnabledProperty.set(newValue.isEmpty() || txtUserName.getText().isEmpty()));
+        txtPassword.textProperty().addListener((observable, oldValue, newValue)
+                -> buttonEnabledProperty.set(newValue.isEmpty() || txtUserName.getText().isEmpty()));
+    }
+
+    private void setupLanguage() {
 
         Locale locale = Locale.getDefault();  //Locale.GERMAN;
         messageBundle = ResourceBundle.getBundle("LogInView", locale);
+    }
+
+    private void setupLabels() {
 
         String userName = messageBundle.getString("lblUserName");
         String password = messageBundle.getString("lblPassword");
         String loginCommand = messageBundle.getString("btnLogin");
         String registerCommand = messageBundle.getString("btnRegister");
-
 
         txtUserName.setPromptText(userName);
         lblUserName.setText(userName);
@@ -101,26 +103,19 @@ public class LoginControl extends VBox {
 
         btnLogin.setText(loginCommand);
         btnRegister.setText(registerCommand);
-        
-//        this.txtUserName.setText("user");
-//        this.txtPassword.setText("pass");
-      //  authenticateUser();
     }
 
     @FXML
     public void register(ActionEvent event) throws AppointmentException {
-        try{
+        try {
 
-            if(txtPassword.getText().isEmpty() || txtUserName.getText().isEmpty()){
+            if (txtPassword.getText().isEmpty() || txtUserName.getText().isEmpty()) {
                 throw new Exception();
             }
             userService.registerUser(txtUserName.getText(), txtPassword.getText());
-            User authUser = userService.authenticateUser(txtUserName.getText(), txtPassword.getText());
-            authenticated = true;
+            userService.authenticateUser(txtUserName.getText(), txtPassword.getText());
             listener.actionPerformed(Commands.authenticate);
-        }
-        catch (Exception ex){
-            authenticated = false;
+        } catch (Exception ex) {
             AlertContent content = new AlertContent();
             content.setAlertType(AlertType.Error);
             content.setTitle(messageBundle.getString("Error"));
@@ -136,18 +131,18 @@ public class LoginControl extends VBox {
         authenticateUser();
     }
 
-    public void addListener(IListener listener){
+    public void addListener(IListener listener) {
         this.listener = listener;
     }
 
     @FXML
-    public void userName(KeyEvent event){
+    public void userName(KeyEvent event) {
         lblUserName.setVisible(true);
 
     }
 
     @FXML
-    public void password(KeyEvent event){
+    public void password(KeyEvent event) {
 
         lblPassword.setVisible(true);
     }
@@ -156,14 +151,13 @@ public class LoginControl extends VBox {
 
         String userName = txtUserName.getText();
 
+        try {
 
-        try{
-
-            if(txtPassword.getText().isEmpty() || txtUserName.getText().isEmpty()){
+            if (txtPassword.getText().isEmpty() || txtUserName.getText().isEmpty()) {
                 throw new Exception();
             }
             User authUser = userService.authenticateUser(userName, txtPassword.getText());
-            if (authUser == null){
+            if (authUser == null) {
 
                 logger.Log(userName + " attempted to login at " + ZonedDateTime.now());
                 showAlert(() -> {
@@ -172,14 +166,11 @@ public class LoginControl extends VBox {
                     content.setMessage(messageBundle.getString("loginError"));
                     return factory.create(new LoginAlertBuilder(), content);
                 });
-            }
-            else{
+            } else {
                 logger.Log(userName + " logged in at " + ZonedDateTime.now());
-                authenticated = true;
                 listener.actionPerformed(Commands.authenticate);
             }
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             showAlert(() -> {
                 AlertContent content = new AlertContent();
                 content.setTitle(messageBundle.getString("Error"));
@@ -189,11 +180,12 @@ public class LoginControl extends VBox {
         }
     }
 
-    private interface IShow{
+    private interface IShow {
+
         Alert getAlert();
     }
 
-    private void showAlert(IShow show){
+    private void showAlert(IShow show) {
         Alert alert = show.getAlert();
         alert.show();
     }

@@ -1,7 +1,5 @@
 package application.controls.calendar;
-
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.geometry.Bounds;
+ 
 
 public interface ICalandarPart {
 

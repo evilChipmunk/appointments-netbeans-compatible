@@ -8,7 +8,8 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ConsultantSchedule{
+public class ConsultantSchedule {
+
     private String month;
     private final String title;
     private final String customer;
@@ -16,27 +17,27 @@ public class ConsultantSchedule{
     private String day;
     private String time;
 
-    private static ArrayList<Integer> knownYears = new ArrayList<>();
-    private static ArrayList<Month> knownMonths = new ArrayList<>();
-    private static ArrayList<Integer> knownDays = new ArrayList<>();
+    private final static ArrayList<Integer> knownYears = new ArrayList<>();
+    private final static ArrayList<Month> knownMonths = new ArrayList<>();
+    private final static ArrayList<Integer> knownDays = new ArrayList<>();
 
-    public ConsultantSchedule(Appointment app){
+    public ConsultantSchedule(Appointment app) {
 
         Month knownMonth = app.getStart().getMonth();
 
-        if (!knownMonths.contains(knownMonth)){
+        if (!knownMonths.contains(knownMonth)) {
             knownMonths.add(knownMonth);
             this.month = knownMonth.getDisplayName(TextStyle.FULL, Locale.US);
         }
 
         int knownYear = app.getStart().getYear();
-        if (!knownYears.contains(knownYear)){
+        if (!knownYears.contains(knownYear)) {
             knownYears.add(knownYear);
             this.year = String.valueOf(knownYear);
         }
 
         int knownDay = app.getStart().getDayOfMonth();
-        if (!knownDays.contains(knownDay)){
+        if (!knownDays.contains(knownDay)) {
             knownDays.add(knownDay);
             this.day = String.valueOf(knownDay);
         }
@@ -49,8 +50,8 @@ public class ConsultantSchedule{
 
     public static ArrayList<String> getColumns() {
 
-        knownYears = new ArrayList<>();
-        knownMonths = new ArrayList<>();
+        knownYears.clear();
+        knownMonths.clear();
 
         ArrayList<String> columns = new ArrayList<>();
         columns.add("Year");

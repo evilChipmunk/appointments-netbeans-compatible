@@ -1,72 +1,55 @@
 package application.controls.calendar;
 
 import application.*;
-import application.controllers.MainController;
 import application.controls.ScreenLoader;
 import application.controls.screens.AppointmentControl;
 import application.factories.AppointmentControlFactory;
 import application.factories.AppointmentLineControlFactory;
-import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.event.EventHandler; 
+import javafx.beans.property.ReadOnlyObjectProperty; 
 import javafx.geometry.Bounds;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent; 
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-import models.Appointment;
-
-import java.time.DayOfWeek;
+import models.Appointment; 
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.SortedSet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 
 public class DayControl extends VBox implements IDayPart {
+    private final VBox appointmentPane = new VBox(); 
+    private final TextFlow flow = new TextFlow();
+    private final Text txtMonth = new Text();
+    private final Text txtDay = new Text();
+        
+    private final ObservableList<AppointmentLineControl> appointmentControls = FXCollections.observableArrayList(); 
     private final ZonedDateTime date;
-    private final ICalandarPart parent;
-    private final Configuration config;
-    private final AppointmentControlFactory appointmentControlFactory;
-    private final AppointmentLineControlFactory lineControlFactory;
-    private int dayNumber;
-    private DayOfWeek dayOfWeek;
-    private SortedSet<Appointment> sortedAppointments;
-    private final ObservableList<AppointmentLineControl> appointmentControls;
-    private ICalendarControl calendarControl;
+    private final ICalandarPart parent; 
+    private final AppointmentLineControlFactory lineControlFactory;  
+    private final SortedSet<Appointment> sortedAppointments;
+    private final ICalendarControl calendarControl;
     ReadOnlyObjectProperty<Bounds> mainBounds;
 
     @Override
     public ICalendarControl getCalendar() {
         return parent.getCalendar();
     }
- 
-
   
-    private VBox appointmentPane;
-
     public DayControl(ZonedDateTime date, SortedSet<Appointment> appointments
             , ICalandarPart parent, Configuration config, AppointmentControlFactory appointmentControlFactory,
                       AppointmentLineControlFactory lineControlFactory){
-        this.parent = parent;
-        this.config = config;
-        this.appointmentControlFactory = appointmentControlFactory;
-        this.lineControlFactory = lineControlFactory;
-        this.appointmentControls = FXCollections.observableArrayList(); 
-        this.date = date;
-        this.dayOfWeek = date.getDayOfWeek();
+        this.parent = parent;  
+        this.lineControlFactory = lineControlFactory; 
+        this.date = date; 
         this.sortedAppointments = appointments;
-
+        this.calendarControl = parent.getCalendar(); 
  
-      //  ScreenLoader.load("/views/DayView.fxml", this, this);
-        
         if (date == null){
             throw new IllegalArgumentException("Date is required for Day Control");
         }
@@ -75,8 +58,26 @@ public class DayControl extends VBox implements IDayPart {
             throw new IllegalArgumentException("Appointments are required for Day Control");
         }
        
-        this.calendarControl = parent.getCalendar(); 
+        setupCSS(date);
 
+        setupDoubleClick(appointmentControlFactory, date, config);
+    
+        setupContent(date);
+        
+        this.displayAppointments(); 
+    }
+
+    private void setupDoubleClick(AppointmentControlFactory appointmentControlFactory1, ZonedDateTime date1, Configuration config1) {
+        addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
+            if (event.getClickCount() > 1) {
+                AppointmentControl control = appointmentControlFactory1.build(date1);
+                ScreenLoader.loadNewStage(control, config1.getSmallAppointmentWidth(), config1.getSmallAppointmentHeight(), Modality.APPLICATION_MODAL);
+            }
+        });
+    }
+ 
+    private void setupCSS(ZonedDateTime date){
+        
         this.getStylesheets().add("/styles/day.css");
         this.getStyleClass().add("body");
         Month selectedMonth = calendarControl.getSelectedMonth();
@@ -87,144 +88,43 @@ public class DayControl extends VBox implements IDayPart {
             this.getStyleClass().add("otherMonth");
         }
  
-        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getClickCount() > 1) {
-                    AppointmentControl control = appointmentControlFactory.build(date);
-                    ScreenLoader.loadNewStage(control, config.getSmallAppointmentWidth()
-                            , config.getSmallAppointmentHeight(), Modality.APPLICATION_MODAL);
-                }
-            }
-        });
-   
+        txtMonth.setStyle("-fx-font-weight: bold");
         
+               
+        boolean isBoldDay = LocalDateTime.now().getDayOfMonth() == date.getDayOfMonth();   
+        if (isBoldDay){
+            txtMonth.setStyle("-fx-font-weight: bold");
+        }
+    }
+    
+    private void setupContent(ZonedDateTime date){
+                
         String month = "";
         if (date.getDayOfMonth() == 1){
             month = date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
         }
 
         String dayOnly = " " + date.getDayOfMonth() + "\n";
-        
-        boolean isBoldDay = LocalDateTime.now().getDayOfMonth() == date.getDayOfMonth();
  
-        TextFlow flow = new TextFlow();
-        Text txtMonth = new Text();
-        txtMonth.setStyle("-fx-font-weight: bold");
-        txtMonth.setText(month);
-        
-        Text txtDay = new Text();
-        if (isBoldDay){
-            txtMonth.setStyle("-fx-font-weight: bold");
-        }
+
+        txtMonth.setText(month); 
         txtDay.setText(dayOnly);
         flow.getChildren().add(txtMonth);
         flow.getChildren().add(txtDay);
-      
-        
-        appointmentPane = new VBox();
+       
         
         this.getChildren().add(flow);
-        this.getChildren().add(appointmentPane);
-//        this.setPrefWidth(staticWidth);
-//        this.setMinWidth(staticWidth);
-//        this.setPrefHeight(staticHeight);
-//        this.setMinHeight(staticHeight);
- 
-//       MainController.getInstance().getMainPanelBoundsProperty().addListener((observable, oldValue, newValue) -> { 
-//              
-//            setDynamicHeight(newValue.getHeight());
-//            setDynamicWidth(newValue.getWidth());
-// 
-//        }); 
-        this.displayAppointments(); 
+        this.getChildren().add(appointmentPane); 
     }
- 
 
+    @Override
     public void setContentSize(double width, double height) {
 
         this.setPrefWidth(width);
         this.setPrefHeight(height);
     }
-//    private int staticWidth = 173;
-//    private int staticHeight = 145;
-
-//    private void setInitialSize(ReadOnlyObjectProperty<Bounds> bounds){
-//
-//        ICalendarControl control = this.getCalendar();
-//        int weeks = control.getNumberOfWeeks();
-//
-//        //for whatever reason, the bounds is much shorter than the visual screen
-//        //and is not growing into the region. this causes the below 'fix' to set height
-//        double width = bounds.get().getWidth();
-//        double height = bounds.get().getHeight();
-////
-////        width = staticWidth;
-////        height = staticHeight;
-//
-//        if (weeks == 1){
-//            height = height * 5; //such a hack...... a month is configured to have 5 weeks
-//        }
-//
-////          would be uncommented if bounds worked on initialize
-////        setDynamicHeight(width);
-////        setDynamicWidth(height);
-//        this.setPrefWidth(width);
-//        this.setMinWidth(width);
-//        this.setPrefHeight(height);
-//        this.setMinHeight(height);
-//    }
-//
-//    private void setDynamicSize(ReadOnlyObjectProperty<Bounds> bounds) {
-//        bounds.addListener((observable, oldValue, newValue) -> {
-//
-//            //these are just too buggy. JavaFX does not respond well enough to visual tree changes.
-//            //when binding to the height/width properties, if initial child contents are outside of
-//            //or even to the main panel bounds, then these properties ONLY get bigger, even when
-//            //actually shrinking the screen.
-//            //When using the bounds property
-//
-//            setDynamicHeight(newValue.getHeight());
-//            setDynamicWidth(newValue.getWidth());
-//
-//            //setInitialSize();
-//        });
-//    }
-
-//    private void setDynamicWidth(double newValue) {
-//
-//        double width = newValue;
-//        double column = width / 7;
-//        column = column-7;
-//
-//        this.setPrefWidth(column);
-//         this.setMinWidth(column);
-//         this.setMaxWidth(column);
-//    }
-//
-//    private void setDynamicHeight(double newValue) {
-//      //  this.control = parent.getCalendar();
-//       // if (control != null) {
-//            //IMonthPart monthControl = control.getCurrentMonth();
-//
-//           // if (monthControl != null) {
-//                double height = newValue;
-//                double header = 100;// monthControl.getHeaderHeight();
-//                height = height - header;
-//
-// 
-//
-//                double row = height / calendarControl.getNumberOfWeeks();
-//               row = row - 20;
-//
-//                this.setPrefHeight(row);
-//                this.setMinHeight(row);
-//                this.setMaxHeight(row);
-//           // }
-//       // }
-//    }
-
-
+  
+    @Override
     public ZonedDateTime getDate(){
         return date;
     }
@@ -239,6 +139,7 @@ public class DayControl extends VBox implements IDayPart {
         return date.getMonth() == this.date.getMonth() && date.getYear() == this.date.getYear() && date.getDayOfMonth() == this.date.getDayOfMonth();
     }
 
+    @Override
     public boolean addAppointment(Appointment appointment) {
         removeAppointment(appointment);
         sortedAppointments.add(appointment);
@@ -246,6 +147,7 @@ public class DayControl extends VBox implements IDayPart {
         return true;
     }
 
+    @Override
     public boolean changeAppointment(Appointment appointment){
         removeAppointment(appointment);
 
@@ -263,7 +165,7 @@ public class DayControl extends VBox implements IDayPart {
 
     @Override
     public void removeAppointment(Appointment appointment) {
-        if (sortedAppointments.size() == 0){
+        if (sortedAppointments.isEmpty()){
             displayAppointments();
             return;
         }
@@ -285,12 +187,10 @@ public class DayControl extends VBox implements IDayPart {
            control.setPrefWidth(this.getWidth());
           
             appointmentPane.getChildren().add(control);  
-            appointmentControls.add(control);
-        
+            appointmentControls.add(control); 
         }  
         
         this.requestFocus();
         this.layout();
-    } 
-     
+    }  
 }

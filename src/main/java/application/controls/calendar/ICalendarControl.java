@@ -10,7 +10,7 @@ import javafx.geometry.Bounds;
 public interface ICalendarControl extends ICalandarPart{
     ObservableList<IMonthPart> getMonths();
     int getMonthCount();
-    ZonedDateTime getFirstDate(); 
+    ZonedDateTime getActualFirstDate(); 
 
     int getNumberOfWeeks();
 

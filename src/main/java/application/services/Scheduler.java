@@ -11,19 +11,18 @@ import java.util.Queue;
 
 public class Scheduler implements IScheduler {
 
-    private Queue<Appointment> appointments;
-    private Queue<Appointment> appointmentRemovals;
+    private final Queue<Appointment> appointments = new LinkedList<>();
+    private final Queue<Appointment> appointmentRemovals = new LinkedList<>();
 
-    private SimpleBooleanProperty hasAppointmentProperty = new SimpleBooleanProperty();
-    private SimpleBooleanProperty hasRemovalProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty hasAppointmentProperty = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty hasRemovalProperty = new SimpleBooleanProperty();
 
-    public Scheduler(){
-        appointments = new LinkedList<>();
-        appointmentRemovals = new LinkedList<>();
+    public Scheduler() {
     }
 
+    @Override
     public Appointment Schedule(ICheckedFunction<Void, Appointment> appointmentAction) throws AppointmentException {
-        Appointment appointment  = null;
+        Appointment appointment = null;
         try {
             appointment = appointmentAction.apply(null);
         } catch (SQLException e) {
@@ -47,22 +46,21 @@ public class Scheduler implements IScheduler {
         hasRemovalProperty.set(true);
     }
 
-
     @Override
-    public SimpleBooleanProperty getHasAppointmentProperty(){
+    public SimpleBooleanProperty getHasAppointmentProperty() {
         return hasAppointmentProperty;
     }
 
     @Override
     public SimpleBooleanProperty getHasRemovalProperty() {
-         return hasRemovalProperty;
+        return hasRemovalProperty;
     }
 
     @Override
     public Appointment getAppointment() {
 
         Appointment appointment = appointments.poll();
-        if (appointments.isEmpty()){
+        if (appointments.isEmpty()) {
             hasAppointmentProperty.set(false);
         }
 
@@ -72,8 +70,8 @@ public class Scheduler implements IScheduler {
     @Override
     public Appointment getRemovedAppointment() {
 
-       Appointment appointment = appointmentRemovals.poll();
-        if (appointmentRemovals.isEmpty()){
+        Appointment appointment = appointmentRemovals.poll();
+        if (appointmentRemovals.isEmpty()) {
             hasRemovalProperty.set(false);
         }
 

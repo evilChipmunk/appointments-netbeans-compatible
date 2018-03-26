@@ -8,7 +8,6 @@ import models.City;
 import models.Country;
 import models.Customer;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CustomerContext implements ICustomerContext {
@@ -18,13 +17,14 @@ public class CustomerContext implements ICustomerContext {
     private final ICityRepo cityRepo;
     private final ICountryRepo countryRepo;
 
-    public CustomerContext(ICustomerRepo repo, IAddressRepo addressRepo, ICityRepo cityRepo, ICountryRepo countryRepo){
+    public CustomerContext(ICustomerRepo repo, IAddressRepo addressRepo, ICityRepo cityRepo, ICountryRepo countryRepo) {
 
         this.repo = repo;
         this.addressRepo = addressRepo;
         this.cityRepo = cityRepo;
         this.countryRepo = countryRepo;
     }
+
     @Override
     public ArrayList<Customer> getCustomers() throws AppointmentException, ValidationException {
 

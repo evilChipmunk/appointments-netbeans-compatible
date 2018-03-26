@@ -86,10 +86,8 @@ public class SidePanelItemControl extends VBox  {
     public EventHandler<MouseEvent> getOnClickAction() {
         return this.clickAction;
     }
-
-
-
-    private void setupNodeClick(Node node, Consumer<ActionEvent> action){
+ 
+    public void setupNodeClick(Node node, Consumer<ActionEvent> action){
         node.setOnMouseClicked(event -> {
             action.accept(null);
         });

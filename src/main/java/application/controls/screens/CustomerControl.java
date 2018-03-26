@@ -13,17 +13,14 @@ import application.viewModels.CustomerViewModel;
 import dataAccess.Includes;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import models.*;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Optional;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -38,8 +35,7 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
     private ArrayList<City> cities;
     private CustomerViewModel viewModel;
 
-
-    public CustomerControl(ICustomerContext service, AlertFactory alertFactory){
+    public CustomerControl(ICustomerContext service, AlertFactory alertFactory) {
 
         this.alertFactory = alertFactory;
         this.service = service;
@@ -142,12 +138,12 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
     }
 
     @FXML
-    public void add(ActionEvent event){
+    public void add(ActionEvent event) {
         this.viewModel = new CustomerViewModel(cities, countries);
         setBindings();
     }
 
-    private void setBindings(){
+    private void setBindings() {
         txtName.textProperty().bindBidirectional(viewModel.getCustomerNameProperty());
         txtAddress.textProperty().bindBidirectional(viewModel.getAddressOneProperty());
         txtAddress2.textProperty().bindBidirectional(viewModel.getAddressTwoProperty());
@@ -165,16 +161,16 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
 
     private void populateCountries() throws AppointmentException, ValidationException {
         this.countries = service.getCountries();
-        for (Country country: countries) {
+        countries.forEach((country) -> {
             autoCountries.getEntries().add(country.getName());
-        }
+        });
     }
 
     private void populateCities() throws AppointmentException, ValidationException {
         this.cities = service.getCities();
-        for (City city:cities) {
+        cities.forEach((city) -> {
             autoCities.getEntries().add(city.getName());
-        }
+        });
     }
 
     private void initializeCustomerList() {
@@ -188,36 +184,36 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
     }
 
     private void populateCustomers() throws ValidationException {
-        ArrayList<Customer> custList  = service.getCustomers();
-        if (custList != null){
+        ArrayList<Customer> custList = service.getCustomers();
+        if (custList != null) {
             this.customers.addAll(custList);
         }
         lstCustomers.setItems(this.customers);
         sortCustomerList();
     }
 
-    private void updateCustomerList(Customer customer){
+    private void updateCustomerList(Customer customer) {
 
         boolean found = false;
-        for(Object custObj: lstCustomers.getItems().toArray()){
-            Customer cust = (Customer)custObj;
-            if(cust.getId() == customer.getId()){
+        for (Object custObj : lstCustomers.getItems().toArray()) {
+            Customer cust = (Customer) custObj;
+            if (cust.getId() == customer.getId()) {
                 lstCustomers.getItems().remove(cust);
                 lstCustomers.getItems().add(customer);
                 found = true;
             }
         }
 
-        if (!found){
+        if (!found) {
             lstCustomers.getItems().add(customer);
         }
     }
 
-    private void removeCustomerFromList(Customer customer){
+    private void removeCustomerFromList(Customer customer) {
 
-        for(Object custObj: lstCustomers.getItems().toArray()){
-            Customer cust = (Customer)custObj;
-            if(cust.getId() == customer.getId()){
+        for (Object custObj : lstCustomers.getItems().toArray()) {
+            Customer cust = (Customer) custObj;
+            if (cust.getId() == customer.getId()) {
                 lstCustomers.getItems().remove(cust);
                 return;
             }
@@ -226,8 +222,8 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
 
     private void sortCustomerList() {
         lstCustomers.getItems().sort((o1, o2) -> {
-            Customer cust1 = (Customer)o1;
-            Customer cust2 = (Customer)o2;
+            Customer cust1 = (Customer) o1;
+            Customer cust2 = (Customer) o2;
             return cust1.getName().compareTo(cust2.getName());
         });
     }
@@ -243,7 +239,7 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
 
     private void initializeListCells() {
         lstCustomers.setCellFactory(param -> {
-            ListCell<Customer> cell = new ListCell<Customer>();
+            ListCell<Customer> cell = new ListCell<>();
             cell.selectedProperty().addListener((observable, oldValue, newValue) -> handleCellDisplaying(cell));
             cell.itemProperty().addListener((observable, oldValue, newValue) -> handleCellDisplaying(cell));
             return cell;
@@ -252,18 +248,17 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
 
     private void selectCustomer(ObservableValue observable, Object oldValue, Object newValue) throws ValidationException {
 
-            Customer customer = (Customer)newValue;
-            if (customer.getAddress() == null) {
-                customer.setAddress(service.getAddress(customer.getId(), Includes.Country, Includes.City));
-            }
+        Customer customer = (Customer) newValue;
+        if (customer.getAddress() == null) {
+            customer.setAddress(service.getAddress(customer.getId(), Includes.Country, Includes.City));
+        }
 
-            this.viewModel = new CustomerViewModel(customer, cities, countries);
-            setBindings();
+        this.viewModel = new CustomerViewModel(customer, cities, countries);
+        setBindings();
     }
-        
-    
+
     @Override
     public void setContentSize(ReadOnlyObjectProperty<Bounds> readOnlyBounds) {
-        
+
     }
 }

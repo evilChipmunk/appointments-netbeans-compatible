@@ -2,8 +2,8 @@ package models;
 
 
 public class City extends BaseEntity {
-    private String name;
-    private Country country;
+    private final String name;
+    private final Country country;
 
     public City(int id, String name, Country country, AuditInfo audit) {
         super(id, audit);
@@ -21,16 +21,9 @@ public class City extends BaseEntity {
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+ 
     public Country getCountry() {
         return country;
     }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
+ 
 }

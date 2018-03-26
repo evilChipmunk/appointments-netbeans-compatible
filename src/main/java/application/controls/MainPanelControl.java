@@ -9,6 +9,7 @@ public abstract class MainPanelControl extends BorderPane implements IMainPanelV
 
     protected IListener listener;
 
+    @Override
     public void addListener(IListener listener){
         this.listener = listener;
     }

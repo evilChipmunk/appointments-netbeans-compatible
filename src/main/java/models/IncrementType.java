@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class IncrementType extends BaseEntity {
 
-    private String description;
-    private int incrementTypeId;
+    private final String description;
+    private final int incrementTypeId;
 
     public IncrementType(int id, String description) {
         super(id, null);
@@ -13,7 +13,7 @@ public class IncrementType extends BaseEntity {
         this.description = description;
     }
 
-    public int getIncrementTypeId(){
+    public int getIncrementTypeId() {
         return incrementTypeId;
     }
 
@@ -21,8 +21,7 @@ public class IncrementType extends BaseEntity {
         return description;
     }
 
-
-    public static ArrayList<IncrementType> getIncrements(){
+    public static ArrayList<IncrementType> getIncrements() {
         ArrayList<IncrementType> list = new ArrayList<>();
         list.add(new IncrementType(1, Seconds));
         list.add(new IncrementType(2, Minutes));
@@ -34,8 +33,8 @@ public class IncrementType extends BaseEntity {
         return getIncrements().stream().filter(x -> x.getId() == incrementTypeId).findFirst().get();
     }
 
-    public static IncrementType getByDesription(String description){
-        return getIncrements().stream().filter(x -> x.getDescription() == description).findFirst().get();
+    public static IncrementType getByDesription(String description) {
+        return getIncrements().stream().filter(x -> x.getDescription().equals(description)).findFirst().get();
     }
 
     public static final String Seconds = "Seconds";

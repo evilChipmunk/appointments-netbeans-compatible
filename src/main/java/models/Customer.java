@@ -1,8 +1,7 @@
 package models;
 
-import java.util.UUID;
-
 public class Customer extends BaseEntity {
+
     private final int addressId;
     private String name;
     private Address address;
@@ -11,7 +10,7 @@ public class Customer extends BaseEntity {
     public Customer(int id, String customerName, Address address, boolean active, AuditInfo audit) {
         super(id, audit);
 
-        if (address == null){
+        if (address == null) {
             throw new IllegalArgumentException("Customer Address cannot be null.");
         }
         this.name = customerName;
@@ -20,25 +19,24 @@ public class Customer extends BaseEntity {
         this.active = active;
     }
 
-    public Customer(int id, String customerName, int addressId, boolean active, AuditInfo audit) {
+    public Customer(int id, String customerName, int addressId, boolean isActive, AuditInfo audit) {
         super(id, audit);
         this.name = customerName;
         this.addressId = addressId;
-        this.active = active;
+        this.active = isActive;
 
     }
 
     public Customer(String customerName, Address address, Boolean isActive) {
-        super(0, new AuditInfo());
 
-        if (address == null){
+        if (address == null) {
             throw new IllegalArgumentException("Customer Address cannot be null.");
         }
 
         this.name = customerName;
         this.addressId = address.getId();
         this.address = address;
-        this.active = active;
+        this.active = isActive;
     }
 
     public String getName() {
@@ -47,6 +45,10 @@ public class Customer extends BaseEntity {
 
     public Address getAddress() {
         return address;
+    }
+
+    public int getAddressId() {
+        return addressId;
     }
 
     public boolean isActive() {

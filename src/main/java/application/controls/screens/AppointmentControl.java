@@ -3,7 +3,6 @@ package application.controls.screens;
 import application.messaging.Commands;
 import application.Configuration;
 import application.controls.*;
-import application.messaging.IListener;
 import application.services.IAppointmentContext;
 import application.services.IScheduler;
 import application.viewModels.AppointmentViewModel;
@@ -19,14 +18,11 @@ import javafx.stage.Stage;
 import models.Appointment;
 import models.Customer;
 
-import java.awt.event.ActionListener;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
-
 
 public class AppointmentControl extends MainPanelControl implements IMainPanelView {
 
@@ -71,8 +67,7 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
     @FXML
     private ComboBox cboEndTime;
 
-
-    public AppointmentControl(IAppointmentContext appointmentContext, IScheduler scheduler, Configuration config){
+    public AppointmentControl(IAppointmentContext appointmentContext, IScheduler scheduler, Configuration config) {
         this.appointmentContext = appointmentContext;
         this.scheduler = scheduler;
         this.config = config;
@@ -80,10 +75,9 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
 
         ScreenLoader.load("/views/AppointmentView.fxml", this, this);
     }
-
 
     public AppointmentControl(IAppointmentContext appointmentContext, IScheduler scheduler, Configuration config,
-                              Appointment appointment){
+            Appointment appointment) {
         this.appointmentContext = appointmentContext;
         this.scheduler = scheduler;
         this.config = config;
@@ -93,17 +87,15 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
         ScreenLoader.load("/views/AppointmentView.fxml", this, this);
     }
 
-
-    public AppointmentControl(IAppointmentContext appointmentContext, IScheduler scheduler, Configuration config, ZonedDateTime seedDate){
+    public AppointmentControl(IAppointmentContext appointmentContext, IScheduler scheduler, Configuration config, ZonedDateTime seedDate) {
         this.appointmentContext = appointmentContext;
         this.scheduler = scheduler;
         this.config = config;
-        this.appointment = appointment;
         this.seedDate = seedDate;
         ScreenLoader.load("/views/AppointmentView.fxml", this, this);
     }
-    
-    public void RefreshCustomers(){
+
+    public void RefreshCustomers() {
         getCustomers();
         autoCustomers.getEntries().clear();
         autoCustomers.setIsLoading(true);
@@ -114,15 +106,11 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
     public void initialize() throws AppointmentException, ValidationException {
         getCustomers();
 
-        if (appointment != null)
-        {
+        if (appointment != null) {
             this.viewModel = new AppointmentViewModel(appointment, this.customers, config);
-        }
-        else if (seedDate != null){
+        } else if (seedDate != null) {
             this.viewModel = new AppointmentViewModel(seedDate, this.customers, config);
-        }
-        else
-        {
+        } else {
             this.viewModel = new AppointmentViewModel(this.customers, config);
         }
 
@@ -141,40 +129,34 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
         txtContact.textProperty().bindBidirectional(viewModel.getContactProperty());
         txtURL.textProperty().bindBidirectional(viewModel.getURLProperty());
 
-
         cboStartTime.setItems(viewModel.getValidDateTimes());
         cboEndTime.setItems(viewModel.getValidDateTimes());
-
 
         cboStartTime.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             viewModel.getStartTimeProperty().set(newValue.toString());
         });
 
         cboEndTime.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-                    viewModel.getEndTimeProperty().set(newValue.toString());
-                }
+            viewModel.getEndTimeProperty().set(newValue.toString());
+        }
         );
 
         startPicker.dateTimeValueProperty().bindBidirectional(viewModel.getStartProperty());
         endPicker.dateTimeValueProperty().bindBidirectional(viewModel.getEndProperty());
 
-        if (viewModel.getStartTimeProperty().get() == null ){
+        if (viewModel.getStartTimeProperty().get() == null) {
             cboStartTime.getSelectionModel().select(viewModel.getTimeFromDate(viewModel.getStartProperty().get()));
-        }
-        else{
+        } else {
             cboStartTime.getSelectionModel().select(viewModel.getStartTimeProperty().get());
         }
 
-        if (viewModel.getEndTimeProperty().get() == null){
+        if (viewModel.getEndTimeProperty().get() == null) {
             cboEndTime.getSelectionModel().select(viewModel.getTimeFromDate(viewModel.getEndProperty().get()));
-        }
-        else{
+        } else {
             cboEndTime.getSelectionModel().select(viewModel.getEndTimeProperty().get());
         }
 
-
     }
-
 
     private void getCustomers() throws AppointmentException, ValidationException {
         this.customers = appointmentContext.getCustomers();
@@ -183,49 +165,44 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
     @FXML
     public void save(ActionEvent event) throws AppointmentException {
 
-        try{
-            Appointment appointment = viewModel.getAppointment();
-            scheduler.Schedule((x) -> { return appointmentContext.save(appointment); } );
+        try {
+            Appointment viewModelAppointment = viewModel.getAppointment();
+            scheduler.Schedule((x) -> {
+                return appointmentContext.save(viewModelAppointment);
+            });
             Stage stage = (Stage) this.getScene().getWindow();
 
-            if (listener == null){
-                stage.hide();
-            }
-            else{
+            if (listener == null) {
+                stage.close();
+            } else {
                 listener.actionPerformed(Commands.appointmentCreated);
             }
-        }
-        catch (ScheduleOverlapException ovEx){
+        } catch (ScheduleOverlapException ovEx) {
             this.showValidationMessage(ovEx.getMessage());
-        }
-        catch (ValidationException vex){
+        } catch (ValidationException vex) {
             this.showValidationMessage(vex.getMessage());
         }
     }
 
     @FXML
     public void delete(ActionEvent event) throws AppointmentException {
-        Appointment appointment = viewModel.getAppointment();
-        scheduler.RemoveFromSchedule((x) -> { return appointmentContext.remove(appointment); } );
+        Appointment viewModelAppointment = viewModel.getAppointment();
+        scheduler.RemoveFromSchedule((x) -> {
+            return appointmentContext.remove(viewModelAppointment);
+        });
 
         Stage stage = (Stage) this.getScene().getWindow();
 
-        if (listener == null){
-            stage.hide();
-        }
-        else{
+        if (listener == null) {
+            stage.close();
+        } else {
 
             listener.actionPerformed(Commands.appointmentDeleted);
         }
     }
-    
-    
-    
+
     @Override
     public void setContentSize(ReadOnlyObjectProperty<Bounds> readOnlyBounds) {
-        
+
     }
 }
-
-
-

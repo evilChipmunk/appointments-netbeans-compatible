@@ -5,13 +5,12 @@ import dataAccess.IReminderRepo;
 import exceptions.AppointmentException;
 import models.Reminder;
 
-import java.sql.SQLException;
+public class ReminderContext {
 
-public class ReminderContext{
     private final IReminderRepo repo;
     private final IApplicationState state;
 
-    public ReminderContext(IReminderRepo repo, IApplicationState state, Configuration config){
+    public ReminderContext(IReminderRepo repo, IApplicationState state, Configuration config) {
 
         this.repo = repo;
         this.state = state;

@@ -1,12 +1,10 @@
 package models;
-
-import java.util.UUID;
+ 
 
 public class Country extends BaseEntity {
-    private String name;
+    private final String name;
 
-    public Country(String name) {
-        super(0, new AuditInfo());
+    public Country(String name) { 
         this.name = name;
     }
 
@@ -17,9 +15,5 @@ public class Country extends BaseEntity {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    } 
 }

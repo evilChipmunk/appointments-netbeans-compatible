@@ -1,30 +1,29 @@
 package application.reports;
 
-import models.Appointment;
-
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class AppointmentCountByConsultant{
-    private String consultant;
+public class AppointmentCountByConsultant {
+
+    private final String consultant;
     private String year;
     private String month;
-    private String total;
+    private final String total;
 
-    public AppointmentCountByConsultant(String consultant, int total){
+    public AppointmentCountByConsultant(String consultant, int total) {
         this.consultant = consultant;
         this.total = String.valueOf(total);
     }
 
-    public AppointmentCountByConsultant(String consultant, int year,  int total){
+    public AppointmentCountByConsultant(String consultant, int year, int total) {
         this.consultant = consultant;
         this.year = String.valueOf(year);
         this.total = String.valueOf(total);
     }
 
-    public AppointmentCountByConsultant(String consultant, Month month,  int total){
+    public AppointmentCountByConsultant(String consultant, Month month, int total) {
         this.consultant = consultant;
         this.month = month.getDisplayName(TextStyle.FULL, Locale.US);
         this.total = String.valueOf(total);

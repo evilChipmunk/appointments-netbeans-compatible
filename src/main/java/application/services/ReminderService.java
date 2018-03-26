@@ -7,8 +7,6 @@ import exceptions.AppointmentException;
 import javafx.beans.property.SimpleBooleanProperty;
 import models.Reminder;
 
-import java.sql.Array;
-import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -25,7 +23,7 @@ public class ReminderService implements IReminderService {
     private final ArrayList<Integer> acknowledgedReminders = new ArrayList<>();
     private final ILogger logger;
 
-    public ReminderService(IReminderRepo repo, IApplicationState state, Configuration config, ILogger logger){
+    public ReminderService(IReminderRepo repo, IApplicationState state, Configuration config, ILogger logger) {
         this.logger = logger;
 
         this.reminders = new ArrayList<>();
@@ -34,11 +32,10 @@ public class ReminderService implements IReminderService {
         this.config = config;
         this.timer = new Timer();
 
-
     }
 
     @Override
-    public void Start(){
+    public void Start() {
 
         timer.schedule(new TimerTask() {
             @Override
@@ -49,19 +46,17 @@ public class ReminderService implements IReminderService {
     }
 
     @Override
-    public void Stop(){
+    public void Stop() {
         timer.cancel();
     }
 
     @Override
-    public void Acknowledge(Reminder reminder){
+    public void Acknowledge(Reminder reminder) {
         acknowledgedReminders.add(reminder.getId());
     }
 
-
-
     @Override
-    public ArrayList<Reminder> getReminders(){
+    public ArrayList<Reminder> getReminders() {
         hasReminders.set(false);
         return reminders;
     }
@@ -73,12 +68,12 @@ public class ReminderService implements IReminderService {
             ArrayList<Reminder> rems = getUserReminders();
             for (Reminder app : rems) {
 
-                if (!acknowledgedReminders.contains(app.getId())){
+                if (!acknowledgedReminders.contains(app.getId())) {
                     reminders.add(app);
                 }
 
             }
-            if (rems.size() > 0){
+            if (rems.size() > 0) {
                 hasReminders.set(true);
             }
 
@@ -95,10 +90,8 @@ public class ReminderService implements IReminderService {
         return repo.getReminders(now, cutOff, state.getLoggedInUser().getName());
     }
 
-    public SimpleBooleanProperty getHasReminders(){
+    @Override
+    public SimpleBooleanProperty getHasReminders() {
         return hasReminders;
     }
 }
-
-
-

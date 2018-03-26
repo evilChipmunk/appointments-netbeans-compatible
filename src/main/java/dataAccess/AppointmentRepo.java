@@ -2,23 +2,18 @@ package dataAccess;
 
 import application.Configuration;
 import application.services.IApplicationState;
-import application.services.IUserService;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
 import models.Appointment;
 import models.AuditInfo;
 import models.Customer;
 
-import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
-public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointmentRepo{
+public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointmentRepo {
 
     private final ICustomerRepo customerRepo;
 
@@ -26,7 +21,6 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
         super(config, applicationState, policy);
         this.customerRepo = customerRepo;
     }
-
 
     @Override
     protected String getByIdProc() {
@@ -44,8 +38,8 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
     }
 
     @Override
-    protected ArrayList<ParameterInfo>  getSaveParams(Appointment entity) {
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo> ();
+    protected ArrayList<ParameterInfo> getSaveParams(Appointment entity) {
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         dictionary.add(new ParameterInfo("appointmentId", entity.getId()));
         dictionary.add(new ParameterInfo("customerId", entity.getCustomer().getId()));
         dictionary.add(new ParameterInfo("title", entity.getTitle()));
@@ -78,14 +72,14 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
         Customer customer = customerRepo.getById(customerId);
         AuditInfo audit = createAudit(results);
         boolean isPreExisting = true;
-        return new Appointment(id, customer, title, description, location, contact, url , start, end, audit, config, isPreExisting);
+        return new Appointment(id, customer, title, description, location, contact, url, start, end, audit, config, isPreExisting);
 
     }
 
     @Override
     public ArrayList<Appointment> getAppointments(int customerId) throws AppointmentException, ValidationException {
         String statement = "sp_GetAppointmentByCustomerId";
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         dictionary.add(new ParameterInfo("customerId", customerId));
         return executeResultList(statement, dictionary);
     }
@@ -93,7 +87,7 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
     @Override
     public ArrayList<Appointment> getAppointments() throws AppointmentException, ValidationException {
         String statement = "sp_GetAppointments";
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
 
         return executeResultList(statement, dictionary);
     }
@@ -102,12 +96,10 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
     public ArrayList<Appointment> getMonthlyAppointments(ZonedDateTime startingDate, ZonedDateTime endingDate)
             throws AppointmentException, ValidationException {
         String statement = "sp_GetMonthlyAppointments";
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
-
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
 
         java.sql.Timestamp utcStart = DatabaseDateTimeConverter.getSqlTimestamp(startingDate);
         java.sql.Timestamp utcEnd = DatabaseDateTimeConverter.getSqlTimestamp(endingDate);
-
 
         dictionary.add(new ParameterInfo("startingDate", utcStart));
         dictionary.add(new ParameterInfo("endingDate", utcEnd));

@@ -8,39 +8,37 @@ public class BusinessException extends RuntimeException {
 
     Collection<String> messages;
 
-    public BusinessException(String msg){
+    public BusinessException(String msg) {
         super(msg);
     }
 
-
-    public BusinessException(String msg, Exception cause){
+    public BusinessException(String msg, Exception cause) {
         super(msg, cause);
     }
 
-
-    public BusinessException(Collection<String> messages){
+    public BusinessException(Collection<String> messages) {
         super();
-        this.messages= messages;
+        this.messages = messages;
     }
 
-
-    public BusinessException (Collection<String> messages, Exception cause){
+    public BusinessException(Collection<String> messages, Exception cause) {
         super(cause);
-        this.messages= messages;
+        this.messages = messages;
     }
 
     @Override
-    public String getMessage(){
+    public String getMessage() {
         String msg = "";
 
-        if(this.messages!=null && !this.messages.isEmpty()){
-            for(String message : this.messages){
-                msg+= message +"\r\n";
+        if (this.messages != null && !this.messages.isEmpty()) {
+            for (String message : this.messages) {
+                msg += message + "\r\n";
             }
 
-        }else msg= super.getMessage();
+        } else {
+            msg = super.getMessage();
+        }
 
         return msg;
     }
 }
-

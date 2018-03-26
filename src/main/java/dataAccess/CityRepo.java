@@ -12,8 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CityRepo extends BaseRepo<City> implements ICityRepo{
-
+public class CityRepo extends BaseRepo<City> implements ICityRepo {
 
     private final ICountryRepo countryRepo;
 
@@ -21,7 +20,6 @@ public class CityRepo extends BaseRepo<City> implements ICityRepo{
         super(config, applicationState, policy);
         this.countryRepo = countryRepo;
     }
-
 
     @Override
     protected String getByIdProc() {
@@ -40,7 +38,7 @@ public class CityRepo extends BaseRepo<City> implements ICityRepo{
 
     @Override
     protected ArrayList<ParameterInfo> getSaveParams(City entity) {
-        ArrayList<ParameterInfo>  dictionary = new ArrayList<ParameterInfo> ();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         dictionary.add(new ParameterInfo("id", entity.getId()));
         dictionary.add(new ParameterInfo("name", entity.getName()));
         dictionary.add(new ParameterInfo("countryId", entity.getCountry().getId()));
@@ -62,10 +60,9 @@ public class CityRepo extends BaseRepo<City> implements ICityRepo{
     @Override
     public ArrayList<City> getCities() throws AppointmentException, ValidationException {
         String statement = "sp_GetCities";
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
 
         return executeResultList(statement, dictionary);
     }
-
 
 }

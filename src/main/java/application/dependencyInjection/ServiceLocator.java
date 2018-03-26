@@ -12,7 +12,6 @@ import application.controls.calendar.CalendarControl;
 import application.factories.*;
 import application.services.*;
 import dataAccess.*;
-import models.Appointment;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -20,18 +19,20 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class ServiceLocator {
+
     private static ServiceLocator instance;
     private static Map<Type, Supplier<Object>> map;
+    private static Map<Type, IVarArgFunc> funcMap;
 
     private ServiceLocator() {
     }
 
-    public static ServiceLocator getInstance(){
-        if(instance == null){
+    public static ServiceLocator getInstance() {
+        if (instance == null) {
             synchronized (ServiceLocator.class) {
-                if(instance == null){
+                if (instance == null) {
                     instance = new ServiceLocator();
-                    instance.map = new HashMap<Type, Supplier<Object>>();
+                    instance.map = new HashMap<>();
                     funcMap = new HashMap<>();
                     instance.createMappings();
                 }
@@ -80,14 +81,14 @@ public class ServiceLocator {
 
     private void mapFactories() {
         map.put(DayControlFactory.class, () -> {
-            IAppointmentLineControlFunc lineFunc = (IAppointmentLineControlFunc)ResolveFunc(AppointmentLineControl.class);
-            IAppointmentControlFunc appControlFunc = (IAppointmentControlFunc)ResolveFunc(AppointmentControl.class);
+            IAppointmentLineControlFunc lineFunc = (IAppointmentLineControlFunc) ResolveFunc(AppointmentLineControl.class);
+            IAppointmentControlFunc appControlFunc = (IAppointmentControlFunc) ResolveFunc(AppointmentControl.class);
             Configuration config = Resolve(Configuration.class);
 
             AppointmentControlFactory controlFactory = Resolve(AppointmentControlFactory.class);
             AppointmentLineControlFactory lineFactory = Resolve(AppointmentLineControlFactory.class);
 
-           return new DayControlFactory(controlFactory, lineFactory, config);
+            return new DayControlFactory(controlFactory, lineFactory, config);
         });
         map.put(WeekControlFactory.class, () -> {
             DayControlFactory factory = Resolve(DayControlFactory.class);
@@ -99,7 +100,7 @@ public class ServiceLocator {
         });
 
         map.put(AppointmentControlFactory.class, () -> {
-            IAppointmentControlFunc appControlFunc = (IAppointmentControlFunc)ResolveFunc(AppointmentControl.class);
+            IAppointmentControlFunc appControlFunc = (IAppointmentControlFunc) ResolveFunc(AppointmentControl.class);
             IAppointmentContext context = Resolve(IAppointmentContext.class);
             IScheduler scheduler = Resolve(IScheduler.class);
             Configuration config = Resolve(Configuration.class);
@@ -108,7 +109,7 @@ public class ServiceLocator {
 
         map.put(AppointmentLineControlFactory.class, () -> {
 
-            IAppointmentLineControlFunc lineFunc = (IAppointmentLineControlFunc)ResolveFunc(AppointmentLineControl.class);
+            IAppointmentLineControlFunc lineFunc = (IAppointmentLineControlFunc) ResolveFunc(AppointmentLineControl.class);
             return new AppointmentLineControlFactory(lineFunc);
         });
 
@@ -126,15 +127,7 @@ public class ServiceLocator {
             return new AppointmentControl(context, scheduler, config, args[0]);
         });
 
-
-
-        funcMap.put(AppointmentLineControl.class, (IAppointmentLineControlFunc) args ->{
-         //   IVarArgFunc<Appointment, AppointmentControl> func =  ResolveFunc(AppointmentControl.class);
-           // AppointmentControl control = func.apply(args[0]);
-
-//            IAppointmentContext context = Resolve(IAppointmentContext.class);
-//            AppointmentControl control =  new AppointmentControl(context, args[0]);
-
+        funcMap.put(AppointmentLineControl.class, (IAppointmentLineControlFunc) args -> {
             Configuration config = Resolve(Configuration.class);
             AppointmentControlFactory factory = Resolve(AppointmentControlFactory.class);
             return new AppointmentLineControl(args[0], factory, config);
@@ -143,7 +136,7 @@ public class ServiceLocator {
 
     private void mapControls() {
         map.put(LoginControl.class, () -> {
-            IUserService service =  Resolve(IUserService.class);
+            IUserService service = Resolve(IUserService.class);
             ILogger logger = Resolve(ILogger.class);
             AlertFactory factory = Resolve(AlertFactory.class);
             return new LoginControl(service, factory, logger);
@@ -176,7 +169,6 @@ public class ServiceLocator {
             return new ReadmeControl();
         });
 
-
         map.put(SidePanelControl.class, () -> {
             CustomerControl customer = Resolve(CustomerControl.class);
             CalendarControl calendar = Resolve(CalendarControl.class);
@@ -185,7 +177,6 @@ public class ServiceLocator {
             ReadmeControl readme = Resolve(ReadmeControl.class);
             return new SidePanelControl(customer, calendar, appointment, report, readme);
         });
-
 
         map.put(LoginControl.class, () -> {
             IUserService userService = Resolve(IUserService.class);
@@ -196,8 +187,8 @@ public class ServiceLocator {
     }
 
     private void mapContexts() {
-        map.put(IUserService.class, () ->
-        {
+        map.put(IUserService.class, ()
+                -> {
             IUserRepo repo = Resolve(IUserRepo.class);
             IApplicationState state = Resolve(IApplicationState.class);
             return new UserService(repo, state);
@@ -217,7 +208,8 @@ public class ServiceLocator {
             IAppointmentRepo appointmentRepo = Resolve(IAppointmentRepo.class);
             IReminderRepo remRepo = Resolve(IReminderRepo.class);
             Configuration config = Resolve(Configuration.class);
-            return new AppointmentContext(customerRepo, appointmentRepo, remRepo, config);
+            IApplicationState state = Resolve(IApplicationState.class);
+            return new AppointmentContext(customerRepo, appointmentRepo, remRepo, state, config);
         });
 
         map.put(ICalendarContext.class, () -> {
@@ -238,7 +230,7 @@ public class ServiceLocator {
         IReminderRepo repo = Resolve(IReminderRepo.class);
         ILogger logger = Resolve(ILogger.class);
         IReminderService singletonScopedReminder = new ReminderService(repo, state, config, logger);
-        map.put(IReminderService.class, () ->  singletonScopedReminder);
+        map.put(IReminderService.class, () -> singletonScopedReminder);
     }
 
     private void mapRepos() {
@@ -284,7 +276,6 @@ public class ServiceLocator {
             return new AppointmentRepo(config, state, repo, policy);
         });
 
-
         //circular dependency on apprepo -> remrepo
         map.put(IReminderRepo.class, () -> {
             Configuration config = Resolve(Configuration.class);
@@ -295,33 +286,27 @@ public class ServiceLocator {
         });
     }
 
-
-    private static Map<Type, IVarArgFunc> funcMap;
-
-
-    public <T> T Resolve(Class<T> type){
+    public <T> T Resolve(Class<T> type) {
 
         Object mappedObject = null;
-        if (map.containsKey(type)){
-            Supplier func =  map.get(type);
+        if (map.containsKey(type)) {
+            Supplier func = map.get(type);
             mappedObject = func.get();
         }
-        try{
-             return type.cast( mappedObject);
-        }
-        catch(Exception ex){
+        try {
+            return type.cast(mappedObject);
+        } catch (Exception ex) {
             String exType = ex.getMessage();
             return null;
         }
-       
+
     }
 
-    public  IVarArgFunc ResolveFunc(Type type){
+    public IVarArgFunc ResolveFunc(Type type) {
 
-        IVarArgFunc  func =  funcMap.get(type);
+        IVarArgFunc func = funcMap.get(type);
 
         return func;
     }
-
 
 }

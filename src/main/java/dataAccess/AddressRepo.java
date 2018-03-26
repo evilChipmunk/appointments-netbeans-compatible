@@ -9,8 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-
-public class AddressRepo extends BaseRepo<Address> implements IAddressRepo{
+public class AddressRepo extends BaseRepo<Address> implements IAddressRepo {
 
     private final ICityRepo cityRepo;
 
@@ -33,7 +32,6 @@ public class AddressRepo extends BaseRepo<Address> implements IAddressRepo{
         return new Address(id, streetOne, streetTwo, city, postalCode, phone, audit);
     }
 
-
     @Override
     protected String getByIdProc() {
         return "sp_GetAddressById";
@@ -51,7 +49,7 @@ public class AddressRepo extends BaseRepo<Address> implements IAddressRepo{
 
     @Override
     protected ArrayList<ParameterInfo> getSaveParams(Address entity) {
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         dictionary.add(new ParameterInfo("id", entity.getId()));
         dictionary.add(new ParameterInfo("address", entity.getStreetOne()));
         dictionary.add(new ParameterInfo("address2", entity.getStreetTwo()));

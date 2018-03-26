@@ -1,9 +1,6 @@
 package application.controls.calendar;
 
-import application.controllers.MainController;
-import application.controls.ScreenLoader;
 import application.factories.WeekControlFactory;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -15,27 +12,25 @@ import models.Appointment;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.geometry.Bounds;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Priority;
 
 public class MonthControl extends GridPane implements Comparable<MonthControl>, IMonthPart {
 
-    private ZonedDateTime firstDate;
+    private final ZonedDateTime monthFirstDate;
     private final int weekCount;
     private final WeekControlFactory weekFactory;
     private final ICalandarPart parent;
     private final SortedSet<Appointment> sortedAppointments;
     private final RowConstraints rowHeader = new RowConstraints();
-    private final RowConstraints rowBody = new RowConstraints(); 
-    private final Label lblSunday = new Label("Sunday"); 
-    private final Label lblMonday = new Label("Monday"); 
-    private final Label lblTuesday = new Label("Tuesday"); 
-    private final Label lblWednesday = new Label("Wednesday"); 
-    private final Label lblThursday = new Label("Thursday"); 
-    private final Label lblFriday = new Label("Friday"); 
-    private final Label lblSaturday = new Label("Saturday"); 
+    private final RowConstraints rowBody = new RowConstraints();
+    private final Label lblSunday = new Label("Sunday");
+    private final Label lblMonday = new Label("Monday");
+    private final Label lblTuesday = new Label("Tuesday");
+    private final Label lblWednesday = new Label("Wednesday");
+    private final Label lblThursday = new Label("Thursday");
+    private final Label lblFriday = new Label("Friday");
+    private final Label lblSaturday = new Label("Saturday");
     private final GridPane monthGrid = new GridPane();
     private final GridPane weekGrid = new GridPane();
     private final ObservableList<IWeekPart> weeks = FXCollections.observableArrayList();
@@ -46,41 +41,32 @@ public class MonthControl extends GridPane implements Comparable<MonthControl>, 
         this.weekFactory = weekFactory;
         this.parent = parent;
         this.sortedAppointments = sortedAppointments;
-        this.firstDate = firstDate;
- 
+        this.monthFirstDate = firstDate;
 
         if (sortedAppointments == null) {
             throw new IllegalArgumentException("Appointments are required for Month control");
         }
 
-        if (firstDate == null) {
+        if (monthFirstDate == null) {
             throw new IllegalArgumentException("First date is required for Month control");
-        } 
-        
+        }
+
         setupCSS();
 
-
         setTodayBold();
-        createGrid();
-      //  setupContentSizes();
-        
-        addWeeks(sortedAppointments, firstDate);
-//            this.setPrefHeight(800);
-//            this.setPrefWidth(900);
 
- 
-//        
-//            monthGrid.setPrefHeight(800);
-//            monthGrid.setPrefWidth(900);
-        this.getChildren().add(monthGrid);
+        createGrid();
+
+        addWeeks(sortedAppointments, monthFirstDate);
+
     }
 
-    private void setupCSS(){
-        
+    private void setupCSS() {
+
         this.getStylesheets().add("styles/month.css");
         this.getStyleClass().add("body");
     }
-    
+
     private void setTodayBold() {
         DayOfWeek dayOfWeek = ZonedDateTime.now().getDayOfWeek();
         switch (dayOfWeek) {
@@ -135,10 +121,9 @@ public class MonthControl extends GridPane implements Comparable<MonthControl>, 
 
         monthGrid.add(weekGrid, 0, 1, 7, 1);
     }
- 
-    
+
     public ZonedDateTime getFirstDate() {
-        return firstDate;
+        return monthFirstDate;
     }
 
     public Collection<IWeekPart> getWeeks() {
@@ -151,19 +136,20 @@ public class MonthControl extends GridPane implements Comparable<MonthControl>, 
 
             ZonedDateTime endingDate = firstDay.plusWeeks(1);
             ZonedDateTime finalFirstDay = firstDay;
-            SortedSet<Appointment> sortedAppointments = new TreeSet<>(appointments.stream()
+            SortedSet<Appointment> sAppointments = new TreeSet<>(appointments.stream()
                     .filter(x -> (x.getStart().compareTo(finalFirstDay) >= 0)
                     && (x.getStart().isBefore(endingDate))).collect(Collectors.toList()));
 
-            int finalW = w; 
-            WeekControl control = weekFactory.build(finalFirstDay, endingDate, finalW, sortedAppointments, this);
+            int finalW = w;
+            WeekControl control = weekFactory.build(finalFirstDay, endingDate, finalW, sAppointments, this);
             control.setPrefWidth(this.getWidth());
             weeks.add(control);
             this.weekGrid.addRow(finalW - 1);
             GridPane.setConstraints(control, 0, finalW);
-            this.weekGrid.getChildren().add((Node) control); 
+            this.weekGrid.getChildren().add((Node) control);
             firstDay = endingDate;
         }
+        this.getChildren().add(monthGrid);
     }
 
     @Override
@@ -202,25 +188,25 @@ public class MonthControl extends GridPane implements Comparable<MonthControl>, 
     public boolean hasAppointment(Appointment appointment) {
         return sortedAppointments.stream().anyMatch(x -> x.getId() == appointment.getId());
     }
-    
-    
-     public void setContentSize(double width, double height) {
-  
+
+    @Override
+    public void setContentSize(double width, double height) {
+
         this.setPrefWidth(width);
         this.setPrefHeight(height);
-        
+
         monthGrid.setPrefWidth(width);
         monthGrid.setPrefHeight(height);
-        
+
         double weekHeight = height / this.getWeekPartCount();
         weekGrid.setPrefWidth(width);
         weekGrid.setPrefHeight(weekHeight);
-        
+
         Iterator itt = weeks.iterator();
-        while(itt.hasNext()){
+        while (itt.hasNext()) {
             WeekControl week = (WeekControl) itt.next();
-             week.setContentSize(width, height);
-        } 
+            week.setContentSize(width, height);
+        }
     }
-  
+
 }

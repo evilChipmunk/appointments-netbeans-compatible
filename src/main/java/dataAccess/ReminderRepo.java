@@ -2,7 +2,6 @@ package dataAccess;
 
 import application.Configuration;
 import application.services.IApplicationState;
-import application.services.IUserService;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
 import models.*;
@@ -18,12 +17,11 @@ public class ReminderRepo extends BaseRepo<Reminder> implements IReminderRepo {
     private final IAppointmentRepo appointmentRepo;
 
     public ReminderRepo(Configuration config, IApplicationState applicationState,
-                        IIncrementTypeRepo incrementTypeRepo, IAppointmentRepo appointmentRepo, ISqlRetryPolicy policy) {
+            IIncrementTypeRepo incrementTypeRepo, IAppointmentRepo appointmentRepo, ISqlRetryPolicy policy) {
         super(config, applicationState, policy);
         this.incrementTypeRepo = incrementTypeRepo;
         this.appointmentRepo = appointmentRepo;
     }
-
 
     @Override
     protected String getByIdProc() {
@@ -42,17 +40,17 @@ public class ReminderRepo extends BaseRepo<Reminder> implements IReminderRepo {
 
     @Override
     protected ArrayList<ParameterInfo> getSaveParams(Reminder entity) {
-        ArrayList<ParameterInfo>  dictionary = new ArrayList<ParameterInfo> ();
-         dictionary.add(new ParameterInfo("id", entity.getId()));
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
+        dictionary.add(new ParameterInfo("id", entity.getId()));
 
         java.sql.Date reminderDate = DatabaseDateTimeConverter.getSqlDate(entity.getReminderDate());
 
-         dictionary.add(new ParameterInfo("reminderDate", reminderDate));
-         dictionary.add(new ParameterInfo("snoozeIncrement", entity.getSnoozeIncrement()));
-         dictionary.add(new ParameterInfo("incrementTypeId", entity.getSnoozeIncrementType().getId()));
-         dictionary.add(new ParameterInfo("appointmentId", entity.getAppointment().getId()));
-         addAuditParams(dictionary, entity);
-         return dictionary;
+        dictionary.add(new ParameterInfo("reminderDate", reminderDate));
+        dictionary.add(new ParameterInfo("snoozeIncrement", entity.getSnoozeIncrement()));
+        dictionary.add(new ParameterInfo("incrementTypeId", entity.getSnoozeIncrementType().getId()));
+        dictionary.add(new ParameterInfo("appointmentId", entity.getAppointment().getId()));
+        addAuditParams(dictionary, entity);
+        return dictionary;
     }
 
     @Override
@@ -65,7 +63,7 @@ public class ReminderRepo extends BaseRepo<Reminder> implements IReminderRepo {
         AuditInfo audit = createAudit(results);
 
         int incrementTypeId = results.getInt("IncrementTypeId");
-       IncrementType incrementType = IncrementType.getById(incrementTypeId);
+        IncrementType incrementType = IncrementType.getById(incrementTypeId);
         Appointment appointment = appointmentRepo.getById(appointmentId);
         return new Reminder(id, reminderDate, snoozeIncrement, incrementType, appointment, audit);
     }
@@ -73,13 +71,11 @@ public class ReminderRepo extends BaseRepo<Reminder> implements IReminderRepo {
     @Override
     public ArrayList<Reminder> getReminders(ZonedDateTime startingDate, ZonedDateTime endingDate, String userName) throws AppointmentException {
         String statement = "sp_GetRemindersByDateAndUser";
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         dictionary.add(new ParameterInfo("name", userName));
-
 
         java.sql.Timestamp utcStart = DatabaseDateTimeConverter.getSqlTimestamp(startingDate);
         java.sql.Timestamp utcEnd = DatabaseDateTimeConverter.getSqlTimestamp(endingDate);
-
 
         dictionary.add(new ParameterInfo("start", utcStart));
         dictionary.add(new ParameterInfo("end", utcEnd));

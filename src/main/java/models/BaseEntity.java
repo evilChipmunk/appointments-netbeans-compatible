@@ -1,15 +1,15 @@
 package models;
- 
 
 public class BaseEntity {
 
     private final AuditInfo audit;
     private int id;
 
-    public BaseEntity(){
+    public BaseEntity() {
         id = 0;
         audit = new AuditInfo();
     }
+
     public BaseEntity(int id, AuditInfo audit) {
 
         this.id = id;
@@ -29,12 +29,12 @@ public class BaseEntity {
     //or would require an extra database call (and possible collision) to get the next id
     //self generation of id's such as guids would create their own identities without collisions.
     public void setId(int id) throws Exception {
-        if (this.id != 0 && this.id != id){
+        if (this.id != 0 && this.id != id) {
             //just a guard check on the object. Once an object has an identity (an id), it cannot be changed
             //as this is a fundamental piece of information. Changing this state would effectively change the whole
             //object itself. Instead - just create a new object with the proper id.
-            throw new  Exception("The identity for the object type " + this.getClass() + " with the id: " + this.id + " " +
-                    "cannot be modified after it has been set.");
+            throw new Exception("The identity for the object type " + this.getClass() + " with the id: " + this.id + " "
+                    + "cannot be modified after it has been set.");
         }
 
         this.id = id;

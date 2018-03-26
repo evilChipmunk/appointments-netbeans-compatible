@@ -2,17 +2,12 @@ package models;
 
 import application.Configuration;
 import exceptions.ValidationException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.TemporalUnit;
 
 public class Appointment extends BaseEntity implements Comparable<Appointment> {
+
     private Customer customer;
     private String title;
     private String description;
@@ -24,18 +19,25 @@ public class Appointment extends BaseEntity implements Comparable<Appointment> {
     private boolean hasInvalidData;
 
     public Appointment(int id, Customer customer, String title, String description,
-                       String location, String contact, String url, ZonedDateTime start, ZonedDateTime end
-            , AuditInfo audit, Configuration config, boolean isPreExisting) throws ValidationException {
+            String location, String contact, String url, ZonedDateTime start, ZonedDateTime end,
+             AuditInfo audit, Configuration config, boolean isPreExisting) throws ValidationException {
         super(id, audit);
-
 
         validate(customer, start, end, config, isPreExisting);
 
         setFields(customer, title, description, location, contact, url, start, end);
     }
 
+    public Appointment(Customer customer, String title, String description, String location,
+             String contact, String url, ZonedDateTime start, ZonedDateTime end, Configuration config) throws ValidationException {
+
+        validate(customer, start, end, config, false);
+
+        setFields(customer, title, description, location, contact, url, start, end);
+    }
+
     private void validate(Customer customer, ZonedDateTime start, ZonedDateTime end, Configuration config, boolean isPreExisting) {
-        if (customer == null){
+        if (customer == null) {
             throw new ValidationException("Customer is required");
         }
 
@@ -58,9 +60,8 @@ public class Appointment extends BaseEntity implements Comparable<Appointment> {
             if (!end.isAfter(start)) {
                 throw new ValidationException("End time cannot be the same or less than the Start time");
             }
-        }
-        catch (ValidationException vex){
-            if (isPreExisting){
+        } catch (ValidationException vex) {
+            if (isPreExisting) {
                 this.hasInvalidData = true;
                 return;
             }
@@ -80,30 +81,14 @@ public class Appointment extends BaseEntity implements Comparable<Appointment> {
         this.end = setDateFormat(end);
     }
 
-    public Appointment(Customer customer, String title, String description, String location
-            , String contact, String url, ZonedDateTime start, ZonedDateTime end, Configuration config) throws ValidationException {
-
-        validate(customer, start, end, config, false);
-
-        setFields(customer, title, description, location, contact, url, start, end);
-    }
-
     public Customer getCustomer() {
         return customer;
     }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
+ 
     public String getTitle() {
         return title;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+ 
     public String getDescription() {
         return description;
     }
@@ -128,7 +113,7 @@ public class Appointment extends BaseEntity implements Comparable<Appointment> {
         return end;
     }
 
-    private ZonedDateTime setDateFormat(ZonedDateTime date){
+    private ZonedDateTime setDateFormat(ZonedDateTime date) {
         return date.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(),
                 date.getHour(), date.getMinute(), date.getSecond(), 0,
                 ZoneId.systemDefault());
@@ -149,27 +134,27 @@ public class Appointment extends BaseEntity implements Comparable<Appointment> {
     public boolean getHasInvalidData() {
         return hasInvalidData;
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         String user = "";
         String cName = "";
         String startTime = "";
         String title = "";
-        
-        if (this.getAudit() != null){
+
+        if (this.getAudit() != null) {
             user = this.getAudit().getCreatedBy();
         }
-        if (this.getCustomer() != null){
+        if (this.getCustomer() != null) {
             cName = this.getCustomer().getName();
         }
-        
+
         DateTimeFormatter format = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
-        
+
         startTime = this.getStart().format(format);
-        
+
         title = this.getTitle();
-        
-        return user + " " + cName + " " + title + " " + startTime; 
+
+        return user + " " + cName + " " + title + " " + startTime;
     }
 }

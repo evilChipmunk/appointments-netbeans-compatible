@@ -1,16 +1,14 @@
 package application.controls;
 
-import javafx.event.EventHandler;
+import application.messaging.IListener; 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-
-import java.awt.event.ActionListener;
+import javafx.scene.layout.VBox;  
 import java.util.function.Consumer;
 
-public class SystemMessageControl  extends VBox{
+public class SystemMessageControl extends VBox {
 
     private final String message;
     private final Consumer<Void> closeAction;
@@ -20,10 +18,9 @@ public class SystemMessageControl  extends VBox{
     @FXML
     private Button btnClose;
 
-    private ActionListener listener;
+    private IListener listener;
 
-
-    public SystemMessageControl(String message, Consumer<Void> closeAction){
+    public SystemMessageControl(String message, Consumer<Void> closeAction) {
         this.message = message;
         this.closeAction = closeAction;
 
@@ -31,19 +28,16 @@ public class SystemMessageControl  extends VBox{
     }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         lblMessage.setText(message);
 
-        btnClose.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                closeAction.accept(null);
-            }
+        btnClose.setOnMouseClicked((MouseEvent event) -> {
+            closeAction.accept(null);
         });
 
-
     }
-    public void addListener(ActionListener listener){
+
+    public void addListener(IListener listener) {
         this.listener = listener;
     }
 }

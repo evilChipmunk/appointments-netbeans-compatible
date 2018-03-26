@@ -26,25 +26,23 @@ public class AppointmentViewModel {
     private Appointment modelAppointment;
     private final ArrayList<Customer> customers;
     private final Configuration config;
-    private SimpleBooleanProperty canDeleteProperty = new SimpleBooleanProperty(false);
-    private SimpleStringProperty titleProperty = new SimpleStringProperty("");
-    private SimpleStringProperty descriptionProperty = new SimpleStringProperty("");
-    private SimpleStringProperty locationProperty = new SimpleStringProperty("");
-    SimpleStringProperty contactProperty = new SimpleStringProperty("");
-    private SimpleStringProperty urlProperty = new SimpleStringProperty("");
-    private ObjectProperty<ZonedDateTime> startProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<ZonedDateTime> endProperty = new SimpleObjectProperty<>();
-    private SimpleStringProperty customerProperty = new SimpleStringProperty("");
-    private SimpleStringProperty startTimeProperty = new SimpleStringProperty("");
-    private SimpleStringProperty endTimeProperty = new SimpleStringProperty("");
-    private SimpleBooleanProperty hasInvalidDataProperty = new SimpleBooleanProperty();
-
+    private final SimpleBooleanProperty canDeleteProperty = new SimpleBooleanProperty(false);
+    private final SimpleStringProperty titleProperty = new SimpleStringProperty("");
+    private final SimpleStringProperty descriptionProperty = new SimpleStringProperty("");
+    private final SimpleStringProperty locationProperty = new SimpleStringProperty("");
+    private final SimpleStringProperty contactProperty = new SimpleStringProperty("");
+    private final SimpleStringProperty urlProperty = new SimpleStringProperty("");
+    private final ObjectProperty<ZonedDateTime> startProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<ZonedDateTime> endProperty = new SimpleObjectProperty<>();
+    private final SimpleStringProperty customerProperty = new SimpleStringProperty("");
+    private final SimpleStringProperty startTimeProperty = new SimpleStringProperty("");
+    private final SimpleStringProperty endTimeProperty = new SimpleStringProperty("");
+    private final SimpleBooleanProperty hasInvalidDataProperty = new SimpleBooleanProperty();
 
     public AppointmentViewModel(Appointment appointment, ArrayList<Customer> customers, Configuration config) {
         this.modelAppointment = appointment;
         this.customers = customers;
         this.config = config;
-
 
         canDeleteProperty.setValue(true);
 
@@ -67,7 +65,7 @@ public class AppointmentViewModel {
         hasInvalidDataProperty.set(appointment.getHasInvalidData());
     }
 
-    public AppointmentViewModel(ArrayList<Customer> customers, Configuration config){
+    public AppointmentViewModel(ArrayList<Customer> customers, Configuration config) {
         this.customers = customers;
         this.config = config;
 
@@ -97,7 +95,6 @@ public class AppointmentViewModel {
         startTimeProperty.addListener((observable, oldValue, newValue) -> startProperty.set(getDateTime(startProperty.get(), newValue)));
         endTimeProperty.addListener((observable, oldValue, newValue) -> endProperty.set(getDateTime(endProperty.get(), newValue)));
 
-
         hasInvalidDataProperty.set(false);
     }
 
@@ -112,13 +109,13 @@ public class AppointmentViewModel {
         ZonedDateTime end = endProperty.get();
         String customerName = customerProperty.get();
 
-        if (customerName == null || customerName.isEmpty()){
+        if (customerName == null || customerName.isEmpty()) {
             throw new ValidationException("Customer is required");
         }
 
-        Customer customer =  customers.stream().filter(x -> x.getName().toLowerCase().equals( customerName.toLowerCase())).findAny().orElse(null);
+        Customer customer = customers.stream().filter(x -> x.getName().toLowerCase().equals(customerName.toLowerCase())).findAny().orElse(null);
 
-        if (modelAppointment != null){
+        if (modelAppointment != null) {
             return new Appointment(modelAppointment.getId(), modelAppointment.getCustomer(), title, description, location,
                     contact, url, start, end, modelAppointment.getAudit(), config, false);
         }
@@ -126,8 +123,7 @@ public class AppointmentViewModel {
         return new Appointment(customer, title, description, location, contact, url, start, end, config);
     }
 
-
-    private String getTimeNumber(String time){
+    private String getTimeNumber(String time) {
         SimpleDateFormat date12Format = new SimpleDateFormat("hh:mm a");
         SimpleDateFormat date24Format = new SimpleDateFormat("HH:mm");
         String timeNumber = null;
@@ -141,7 +137,7 @@ public class AppointmentViewModel {
 
     private ZonedDateTime getDateTime(ZonedDateTime date, String selectedTime) {
         String timeNumber = selectedTime;
-        if (selectedTime.contains("A") || selectedTime.contains("P")){
+        if (selectedTime.contains("A") || selectedTime.contains("P")) {
             timeNumber = getTimeNumber(selectedTime);
         }
 
@@ -152,15 +148,14 @@ public class AppointmentViewModel {
                 hour, minute, 0, 0, ZoneId.systemDefault());
     }
 
-    private ZonedDateTime roundDateToMinutesBlock(ZonedDateTime date){
+    private ZonedDateTime roundDateToMinutesBlock(ZonedDateTime date) {
         int minute = date.getMinute();
-        if (minute >= 30){
-            while(date.getMinute() > 30){
+        if (minute >= 30) {
+            while (date.getMinute() > 30) {
                 date = date.minusMinutes(1);
             }
-        }
-        else{
-            while(date.getMinute() > 0){
+        } else {
+            while (date.getMinute() > 0) {
                 date = date.minusMinutes(1);
             }
         }
@@ -169,7 +164,7 @@ public class AppointmentViewModel {
 
     }
 
-    public ObservableList<String> getValidDateTimes(){
+    public ObservableList<String> getValidDateTimes() {
 
         //set up as a one time operation because this list wont change
         if (validTimes == null) {
@@ -189,14 +184,13 @@ public class AppointmentViewModel {
 
     }
 
-    public String getTimeFromDate(ZonedDateTime date){
+    public String getTimeFromDate(ZonedDateTime date) {
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern("hh:mm a");
         return date.format(format);
     }
 
-    public ZonedDateTime getZoneDateTime(ZonedDateTime date, int plusMinutes){
-
+    public ZonedDateTime getZoneDateTime(ZonedDateTime date, int plusMinutes) {
 
         date = roundDateToMinutesBlock(date);
         date = date.plusMinutes(plusMinutes);
@@ -204,26 +198,26 @@ public class AppointmentViewModel {
         return sanitizeDate(date);
     }
 
-    public ZonedDateTime getZoneDateTimeFromNow(ZonedDateTime date, int plusMinutes){
+    public ZonedDateTime getZoneDateTimeFromNow(ZonedDateTime date, int plusMinutes) {
 
         date = roundDateToMinutesBlock(date);
-        while (date.isBefore(ZonedDateTime.now())){
+        while (date.isBefore(ZonedDateTime.now())) {
             date = date.plusMinutes(30);
         }
         date = date.plusMinutes(plusMinutes);
 
-        while (date.getHour() < config.getBusinessStartHour()){
+        while (date.getHour() < config.getBusinessStartHour()) {
             date = date.plusHours(1);
         }
 
-        while (date.getHour() > config.getBusinessEndHour()){
+        while (date.getHour() > config.getBusinessEndHour()) {
             date = date.minusHours(1);
         }
 
         return sanitizeDate(date);
     }
 
-    public ZonedDateTime getZoneDateTimeFromNow(int plusMinutes){
+    public ZonedDateTime getZoneDateTimeFromNow(int plusMinutes) {
 
         ZonedDateTime date = getZoneDateTimeFromNow(ZonedDateTime.now(), plusMinutes);
 
@@ -231,11 +225,11 @@ public class AppointmentViewModel {
     }
 
     private ZonedDateTime sanitizeDate(ZonedDateTime date) {
-        while (date.getHour() <= config.getBusinessStartHour()){
+        while (date.getHour() <= config.getBusinessStartHour()) {
             date = date.plusMinutes(30);
         }
 
-        while (date.getHour() >= config.getBusinessEndHour()){
+        while (date.getHour() >= config.getBusinessEndHour()) {
             date = date.minusMinutes(30);
         }
         return date;
@@ -249,15 +243,15 @@ public class AppointmentViewModel {
         return descriptionProperty;
     }
 
-    public SimpleStringProperty getLocationProperty(){
+    public SimpleStringProperty getLocationProperty() {
         return locationProperty;
     }
 
-    public SimpleStringProperty getContactProperty(){
+    public SimpleStringProperty getContactProperty() {
         return contactProperty;
     }
 
-    public SimpleStringProperty getURLProperty(){
+    public SimpleStringProperty getURLProperty() {
         return urlProperty;
     }
 
@@ -281,7 +275,7 @@ public class AppointmentViewModel {
         return endTimeProperty;
     }
 
-    public SimpleBooleanProperty getCanDeleteProperty(){
+    public SimpleBooleanProperty getCanDeleteProperty() {
         return canDeleteProperty;
     }
 

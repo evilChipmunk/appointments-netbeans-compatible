@@ -3,12 +3,12 @@ package application.reports;
 import models.Appointment;
 
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class AppointmentByMonth{
+public class AppointmentByMonth {
+
     private String month;
     private final String title;
     private final String customer;
@@ -17,18 +17,17 @@ public class AppointmentByMonth{
     private static ArrayList<Integer> knownYears = new ArrayList<>();
     private static ArrayList<Month> knownMonths = new ArrayList<>();
 
-    public AppointmentByMonth(Appointment app){
+    public AppointmentByMonth(Appointment app) {
 
         Month knownMonth = app.getStart().getMonth();
 
-        if (!knownMonths.contains(knownMonth)){
+        if (!knownMonths.contains(knownMonth)) {
             knownMonths.add(knownMonth);
             this.month = knownMonth.getDisplayName(TextStyle.FULL, Locale.US);
         }
 
-
         int knownYear = app.getStart().getYear();
-        if (!knownYears.contains(knownYear)){
+        if (!knownYears.contains(knownYear)) {
             knownYears.add(knownYear);
             this.year = String.valueOf(knownYear);
         }
@@ -66,6 +65,3 @@ public class AppointmentByMonth{
         return year;
     }
 }
-
-
-

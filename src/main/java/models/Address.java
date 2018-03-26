@@ -1,17 +1,14 @@
 package models;
 
-import java.util.UUID;
-
 public class Address extends BaseEntity {
 
-    private String streetOne;
-    private String streetTwo;
-    private City city;
-    private String postalCode;
-    private String phone;
+    private final String streetOne;
+    private final String streetTwo;
+    private final City city;
+    private final String postalCode;
+    private final String phone;
 
-    public Address(int id, String streetOne, String streetTwo, City city, String postalCode, String phone, AuditInfo audit)
-    {
+    public Address(int id, String streetOne, String streetTwo, City city, String postalCode, String phone, AuditInfo audit) {
         super(id, audit);
         this.streetOne = streetOne;
         this.streetTwo = streetTwo;
@@ -32,39 +29,20 @@ public class Address extends BaseEntity {
         return streetOne;
     }
 
-    public void setStreetOne(String streetOne) {
-        this.streetOne = streetOne;
-    }
-
     public String getStreetTwo() {
         return streetTwo;
-    }
-
-    public void setStreetTwo(String streetTwo) {
-        this.streetTwo = streetTwo;
     }
 
     public City getCity() {
         return city;
     }
 
-    public void setCity(City city) {
-        this.city = city;
-    }
-
     public String getPostalCode() {
         return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 }

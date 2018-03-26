@@ -7,20 +7,20 @@ import exceptions.AppointmentException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-
 public class SqlRetryPolicy implements ISqlRetryPolicy {
 
     private final Configuration config;
     private final ILogger logger;
 
-    public SqlRetryPolicy(Configuration config, ILogger logger){
+    public SqlRetryPolicy(Configuration config, ILogger logger) {
         this.config = config;
         this.logger = logger;
     }
+
     @Override
-    public Connection Execute(ICheckedFunction<Void, Connection> sqlAction)  throws SQLException, AppointmentException {
+    public Connection Execute(ICheckedFunction<Void, Connection> sqlAction) throws SQLException, AppointmentException {
         int retries = config.getRetry();
-        while(retries != 0) {
+        while (retries != 0) {
             try {
                 return sqlAction.apply(null);
             } catch (SQLException ex) {
@@ -48,7 +48,7 @@ public class SqlRetryPolicy implements ISqlRetryPolicy {
         return null;
     }
 
-    private int getWaitTime(int retries){
-        return  (int)Math.pow(retries, 2) * 1000;
+    private int getWaitTime(int retries) {
+        return (int) Math.pow(retries, 2) * 1000;
     }
 }

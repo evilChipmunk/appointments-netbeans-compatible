@@ -3,43 +3,44 @@ package application.controls.calendar;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public class MyDatePick{
+public class MyDatePick {
+
     int year;
     int monthNum;
     String month;
 
-    public MyDatePick(int year, int monthNum){
+    public MyDatePick(int year, int monthNum) {
         this.year = year;
         this.monthNum = monthNum;
         this.month = getMonth(monthNum);
     }
 
-    public int getYear(){
+    public int getYear() {
         return year;
     }
 
-    public String getMonth(){
+    public String getMonth() {
         return month;
     }
 
-    public int getMonthNum(){
+    public int getMonthNum() {
         return monthNum;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return getMonth() + " " + getYear();
     }
 
-    public ZonedDateTime getDate(){
+    public ZonedDateTime getDate() {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime seedDate = ZonedDateTime.of(year, monthNum, 1, now.getHour(), 0, 0, 0, ZoneId.systemDefault());
 
         return seedDate;
     }
 
-    private String getMonth(int monthNum){
-        switch (monthNum){
+    private String getMonth(int monthNum) {
+        switch (monthNum) {
             case 1:
                 return "January";
             case 2:

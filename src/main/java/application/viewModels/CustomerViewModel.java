@@ -8,6 +8,7 @@ import models.*;
 import java.util.ArrayList;
 
 public class CustomerViewModel {
+
     private Customer modelCustomer;
     private Address modelAddress;
     private ArrayList<City> modelCities;
@@ -25,7 +26,7 @@ public class CustomerViewModel {
     private SimpleBooleanProperty isActiveProperty;
     private SimpleBooleanProperty canDeleteProperty;
 
-    public CustomerViewModel(Customer customer, ArrayList<City> cities, ArrayList<Country> countries){
+    public CustomerViewModel(Customer customer, ArrayList<City> cities, ArrayList<Country> countries) {
 
         setCountryAndCityLists(cities, countries);
 
@@ -80,24 +81,23 @@ public class CustomerViewModel {
         canDeleteProperty = new SimpleBooleanProperty(false);
     }
 
-
-    public Customer getCustomer(){
+    public Customer getCustomer() {
 
         String customerName = customerNameProperty.get();
-        if ( customerName == null || customerName.isEmpty()){
+        if (customerName == null || customerName.isEmpty()) {
             throw new ValidationException("Customer name is required");
         }
 
         Boolean isActive = isActiveProperty.get();
         Address address = getAddress();
 
-        if (modelCustomer != null){
+        if (modelCustomer != null) {
             return new Customer(modelCustomer.getId(), customerName, address, isActive, modelCustomer.getAudit());
         }
         return new Customer(customerName, address, isActive);
     }
 
-    private Address getAddress(){
+    private Address getAddress() {
 
         String streetOne = addressOneProperty.get();
         String streetTwo = addressTwoProperty.get();
@@ -105,53 +105,51 @@ public class CustomerViewModel {
         String phone = phoneProperty.get();
 
         String countryName = countryProperty.get();
-        if (countryName == null || countryName.isEmpty()){
+        if (countryName == null || countryName.isEmpty()) {
             throw new ValidationException("Country is required");
         }
         String cityName = cityProperty.get();
-        if (cityName == null || cityName.isEmpty()){
+        if (cityName == null || cityName.isEmpty()) {
             throw new ValidationException("City is required");
         }
 
         Country country = getCountry(countryName);
         City city = getLocatedCity(cityName, country);
 
-        if (modelAddress != null){
-            return new Address(modelAddress.getId(), streetOne, streetTwo, city, postalCode,phone, modelAddress.getAudit());
+        if (modelAddress != null) {
+            return new Address(modelAddress.getId(), streetOne, streetTwo, city, postalCode, phone, modelAddress.getAudit());
         }
 
         return new Address(streetOne, streetTwo, city, postalCode, phone);
 
     }
 
-    private Country getCountry(String countryName){
-        for(Country country: modelCountries){
-            if (country.getName().toLowerCase().equals(countryName.toLowerCase())){
+    private Country getCountry(String countryName) {
+        for (Country country : modelCountries) {
+            if (country.getName().toLowerCase().equals(countryName.toLowerCase())) {
                 return country;
             }
         }
         return new Country(countryName);
     }
 
-    private City getLocatedCity(String cityName, Country country){
+    private City getLocatedCity(String cityName, Country country) {
         ArrayList<City> foundCities = new ArrayList<>();
-        for (City city: modelCities
-                ) {
-            if (city.getName().toLowerCase().equals(cityName.toLowerCase())){
+        for (City city : modelCities) {
+            if (city.getName().toLowerCase().equals(cityName.toLowerCase())) {
                 foundCities.add(city);
             }
         }
 
-        for(City city: foundCities){
-            if (city.getCountry().getId() == country.getId()){
+        for (City city : foundCities) {
+            if (city.getCountry().getId() == country.getId()) {
                 return city;
             }
         }
         return new City(cityName, country);
     }
 
-
-    public SimpleStringProperty getCustomerNameProperty(){
+    public SimpleStringProperty getCustomerNameProperty() {
         return customerNameProperty;
     }
 
@@ -160,10 +158,10 @@ public class CustomerViewModel {
     }
 
     public SimpleStringProperty getAddressTwoProperty() {
-         return addressTwoProperty;
+        return addressTwoProperty;
     }
 
-    public SimpleStringProperty getPostalCodeProperty(){
+    public SimpleStringProperty getPostalCodeProperty() {
         return postalCodeProperty;
     }
 
@@ -171,11 +169,11 @@ public class CustomerViewModel {
         return phoneProperty;
     }
 
-    public SimpleStringProperty getCityProperty(){
+    public SimpleStringProperty getCityProperty() {
         return cityProperty;
     }
 
-    public SimpleStringProperty getCountryProperty(){
+    public SimpleStringProperty getCountryProperty() {
         return countryProperty;
     }
 
@@ -183,5 +181,7 @@ public class CustomerViewModel {
         return isActiveProperty;
     }
 
-    public SimpleBooleanProperty getCanDeleteProperty() {return canDeleteProperty;}
+    public SimpleBooleanProperty getCanDeleteProperty() {
+        return canDeleteProperty;
+    }
 }

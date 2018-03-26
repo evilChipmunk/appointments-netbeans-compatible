@@ -47,8 +47,7 @@ public class ReminderAlertBuilder extends AlertBuilder{
 
 
         GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-      //  expContent.add(label, 0, 0);
+        expContent.setMaxWidth(Double.MAX_VALUE); 
         expContent.add(textArea, 0, 1);
 
         alert.getDialogPane().setExpandableContent(expContent);

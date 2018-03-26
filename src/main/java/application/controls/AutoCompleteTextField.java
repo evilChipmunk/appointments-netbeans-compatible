@@ -1,34 +1,33 @@
 package application.controls;
 
-import java.awt.*;
 import java.util.SortedSet;
 
-import com.sun.javafx.scene.control.behavior.TextAreaBehavior;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.event.ActionEvent; 
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
 /**
- * This class is a TextField which implements an "autocomplete" functionality, based on a supplied list of entries.
+ * This class is a TextField which implements an "autocomplete" functionality,
+ * based on a supplied list of entries.
+ *
  * @author Caleb Brinkman
  */
-public class AutoCompleteTextField extends TextField
-{
-    /** The existing autocomplete entries. */
+public class AutoCompleteTextField extends TextField {
+
+    /**
+     * The existing autocomplete entries.
+     */
     private final SortedSet<String> entries;
-    /** The popup used to select an entry. */
+    /**
+     * The popup used to select an entry.
+     */
     private ContextMenu entriesPopup;
     private boolean isLoading;
 
@@ -36,58 +35,35 @@ public class AutoCompleteTextField extends TextField
         this.isLoading = isLoading;
     }
 
-    /** Construct a new AutoCompleteTextField. */
+    /**
+     * Construct a new AutoCompleteTextField.
+     */
     public AutoCompleteTextField() {
         super();
         entries = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         entriesPopup = new ContextMenu();
 
-//        addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-//            @Override
-//            public void handle(KeyEvent event) {
-//                KeyCode code = event.getCode();
-//
-//                if (code == KeyCode.TAB && !event.isShiftDown() && !event.isControlDown()) {
-//                    event.consume();
-//
-//                }
-//            }
-//        });
-
-        textProperty().addListener(new ChangeListener<String>()
-        {
+        textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                if (getText() == null || getText().length() == 0)
-                {
+                if (getText() == null || getText().length() == 0) {
                     entriesPopup.hide();
-                }
-//                else if(getText().endsWith("\t")){
-//                    setText(getText().replace("\t", ""));
-//                    entriesPopup.hide();
-//                }
-
-                else
-                {
+                } else {
                     LinkedList<String> searchResult = new LinkedList<>();
                     searchResult.addAll(entries.subSet(getText(), getText() + Character.MAX_VALUE));
 
-                    if (entries.size() > 0)
-                    {
+                    if (entries.size() > 0) {
                         populatePopup(searchResult);
-                        if (!entriesPopup.isShowing())
-                        {
+                        if (!entriesPopup.isShowing()) {
 
-                            if (isLoading){
+                            if (isLoading) {
                                 entriesPopup.hide();
                                 setIsLoading(false);
-                            }
-                            else{
+                            } else {
                                 entriesPopup.show(AutoCompleteTextField.this, Side.BOTTOM, 0, 0);
                             }
                         }
-                    } else
-                    {
+                    } else {
                         entriesPopup.hide();
                     }
                 }
@@ -104,12 +80,17 @@ public class AutoCompleteTextField extends TextField
 
     /**
      * Get the existing set of autocomplete entries.
+     *
      * @return The existing autocomplete entries.
      */
-    public SortedSet<String> getEntries() { return entries; }
+    public SortedSet<String> getEntries() {
+        return entries;
+    }
 
     /**
-     * Populate the entry set with the given search results.  Display is limited to 10 entries, for performance.
+     * Populate the entry set with the given search results. Display is limited
+     * to 10 entries, for performance.
+     *
      * @param searchResult The set of matching strings.
      */
     private void populatePopup(List<String> searchResult) {
@@ -117,23 +98,18 @@ public class AutoCompleteTextField extends TextField
         // If you'd like more entries, modify this line.
         int maxEntries = 10;
         int count = Math.min(searchResult.size(), maxEntries);
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             final String result = searchResult.get(i);
             Label entryLabel = new Label(result);
             CustomMenuItem item = new CustomMenuItem(entryLabel, true);
-            item.setOnAction(new EventHandler<ActionEvent>()
-            {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    setText(result);
-                    entriesPopup.hide();
-                }
+            item.setOnAction((ActionEvent actionEvent) -> {
+                setText(result);
+                entriesPopup.hide();
             });
             menuItems.add(item);
         }
 
-        if (menuItems.size() == 1){
+        if (menuItems.size() == 1) {
             entriesPopup.hide();
         }
         entriesPopup.getItems().clear();

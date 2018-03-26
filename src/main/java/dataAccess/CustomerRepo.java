@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo{
+public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo {
 
     private final IAddressRepo addressRepo;
 
@@ -38,7 +38,7 @@ public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo{
 
     @Override
     protected ArrayList<ParameterInfo> getSaveParams(Customer entity) {
-        ArrayList<ParameterInfo> params = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> params = new ArrayList<>();
         params.add(new ParameterInfo("id", entity.getId()));
         params.add(new ParameterInfo("name", entity.getName()));
         params.add(new ParameterInfo("addressId", entity.getAddress().getId()));
@@ -57,11 +57,10 @@ public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo{
         AuditInfo audit = createAudit(results);
 
         Customer customer;
-        if (hasInclude(Includes.Address, includes)){
+        if (hasInclude(Includes.Address, includes)) {
             Address address = addressRepo.getById(addressId);
             customer = new Customer(id, name, address, active, audit);
-        }
-        else{
+        } else {
             customer = new Customer(id, name, addressId, active, audit);
         }
 
@@ -71,9 +70,7 @@ public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo{
     @Override
     public ArrayList<Customer> getCustomers(Includes... includes) throws AppointmentException, ValidationException {
         String statement = "sp_GetCustomers";
-        ArrayList<ParameterInfo> dictionary = new ArrayList<ParameterInfo>();
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         return executeResultList(statement, dictionary);
     }
 }
-
-
