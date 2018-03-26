@@ -10,6 +10,7 @@ import application.messaging.Commands;
 import application.messaging.IListener;
 import application.services.IUserService;
 import exceptions.AppointmentException;
+import exceptions.BusinessException;
 import exceptions.ValidationException;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -157,20 +158,26 @@ public class LoginControl extends VBox {
                 throw new Exception();
             }
             User authUser = userService.authenticateUser(userName, txtPassword.getText());
+            logger.Log(userName + " attempted to login at " + ZonedDateTime.now());
+            
             if (authUser == null) {
 
-                logger.Log(userName + " attempted to login at " + ZonedDateTime.now());
+                throw new BusinessException("unable to log in user");
+
+            } else {
+                logger.Log(userName + " logged in at " + ZonedDateTime.now());
+                listener.actionPerformed(Commands.authenticate);
+            }
+        } 
+        catch(BusinessException bex){
                 showAlert(() -> {
                     AlertContent content = new AlertContent();
                     content.setTitle(messageBundle.getString("Warning"));
                     content.setMessage(messageBundle.getString("loginError"));
                     return factory.create(new LoginAlertBuilder(), content);
                 });
-            } else {
-                logger.Log(userName + " logged in at " + ZonedDateTime.now());
-                listener.actionPerformed(Commands.authenticate);
-            }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             showAlert(() -> {
                 AlertContent content = new AlertContent();
                 content.setTitle(messageBundle.getString("Error"));

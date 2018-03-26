@@ -1,0 +1,8 @@
+2018-03-25T20:41:51.290-05:00[America/Chicago]: user logged in at 2018-03-25T20:41:51.289-05:00[America/Chicago]
+2018-03-25T23:21:59.306-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:21:59.306-05:00[America/Chicago]
+2018-03-25T23:26:08.111-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:26:08.110-05:00[America/Chicago]
+2018-03-25T23:50:40.032-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:50:40.031-05:00[America/Chicago]
+2018-03-25T23:52:40.277-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:52:40.276-05:00[America/Chicago]
+2018-03-25T23:52:44.439-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:52:44.439-05:00[America/Chicago]
+2018-03-25T23:53:17.789-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:53:17.789-05:00[America/Chicago]
+2018-03-25T23:53:25.400-05:00[America/Chicago]: user attempted to login at 2018-03-25T23:53:25.400-05:00[America/Chicago]
