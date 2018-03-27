@@ -68,8 +68,8 @@ public class LoginControl extends VBox {
 
         setupLabels();
         
-        btnRegister.setVisible(false);
-        btnRegister.setPrefWidth(0);
+//        btnRegister.setVisible(false);
+//        btnRegister.setPrefWidth(0);
 
 //        this.txtUserName.setText("user");
 //        this.txtPassword.setText("pass");

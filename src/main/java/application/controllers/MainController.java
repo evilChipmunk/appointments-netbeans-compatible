@@ -35,6 +35,7 @@ import java.util.Optional;
 
 public class MainController implements IListener {
 
+    private static MainController instance;
     private final Configuration config;
     private final IReminderService reminderService;
     private final AlertFactory alertFactory;
@@ -44,13 +45,8 @@ public class MainController implements IListener {
     private boolean heightChanged;
     private double windowWidth;
     private double windowHeight;
+    AnchorPane aPane = new AnchorPane();
 
-    @FXML
-    private final SidePanelControl sidePanel;
-
-    @FXML
-    BorderPane borderPane;
- 
 
     public MainController(LoginControl login, SidePanelControl sidePanel, IReminderService reminderService, AlertFactory alertFactory, Configuration config) {
 
@@ -64,112 +60,19 @@ public class MainController implements IListener {
 
     }
 
-    @FXML
-    public void initialize() throws AppointmentException, ValidationException {
-
-        setupLogin();
-        sidePanel.addListener(this);
+    public static MainController getInstance() {
+        return instance;
+    }
+     
+    public ReadOnlyObjectProperty<Bounds> getMainPanelBoundsProperty() {
+        return aPane.layoutBoundsProperty();
+        // return borderPane.getCenter().boundsInParentProperty();
     }
 
-    @Override
-    public void actionPerformed(Commands command, Object... args) {
-
-        try {
-            switch (command) {
-                case authenticate:
-
-                    borderPane.setLeft(sidePanel);
-                    sidePanel.showCalendar();
-
-                    reminderService.getHasReminders().addListener((observable, oldValue, newValue) -> {
-                        if (!newValue) {
-                            return;
-                        }
-                        Platform.runLater(()
-                                -> {
-                            ArrayList<Reminder> list = reminderService.getReminders();
-                            String header = "You have the following appointments: " + "\n" + "\n";
-                            String message = "";
-
-                            for (Reminder rem : list) {
-                                DateTimeFormatter format = DateTimeFormatter.ofPattern("hh:mm a");
-
-                                message
-                                        += rem.getAppointment().getTitle() + " with "
-                                        + rem.getAppointment().getCustomer().getName() + " at "
-                                        + rem.getAppointment().getStart().format(format) + "\n"; 
-                            }
-
-                            if (message.isEmpty()) {
-                                return;
-                            }
-                            message = header + message;
-
-                            AlertContent content = new AlertContent();
-                            content.setTitle("Appointment Notice");
-                            content.setMessage("Customer appointments");
-                            content.setLargeContent(message);
-                            Alert alert = alertFactory.create(new ReminderAlertBuilder(), content);
-
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                list.forEach((rem) -> {
-                                    reminderService.Acknowledge(rem);
-                                });
-                            }
-                        }
-                        );
-                    });
-                    reminderService.Start();
-
-                    break;
-                case appointmentCreated:
-                case appointmentDeleted:
-                    sidePanel.showCalendar();
-                    break;
-                case validationException:
-                    if (args != null && args.length > 0) {
-                        String message = String.valueOf(args[0]);
-                        addSystemMessage(message);
-                    }
-                    break;
-                case messageAck:
-                    borderPane.setTop(null);
-                    break;
-                case addControl:
-                    addMainControl((IMainPanelView) args[0]);
-                    break;
-                case monthPickerShown:
-                    if (args != null && args.length == 2) {
-                        double x = (double) args[0];
-                        double y = (double) args[1];
-                        MonthPickerDialog dialog = new MonthPickerDialog();
-                        dialog.addListener(this);
-                        if (x != 0 && y != 0) {
-                            dialog.setLayoutX(x);
-                            dialog.setLayoutY(y);
-                        }
-
-                        ICalendarControl control = (ICalendarControl) aPane.getChildren().get(0);
-                        dialog.show(control.getActualFirstDate());
-                    }
-                    break;
-                case monthPickerSelected:
-                    if (args != null && args.length == 1) {
-                        ZonedDateTime date = (ZonedDateTime) args[0];
-                        ICalendarControl control = (ICalendarControl) aPane.getChildren().get(0);
-                        control.AddMonth(date);
-                        this.addMainControl((IMainPanelView) control);
-                    }
-                    break;
-
-            }
-        } catch (AppointmentException ex) {
-            ErrorControl control = new ErrorControl(ex);
-            control.show();
-        }
+    public Stage getStage() {
+        return stage;
     }
-
+    
     public void setStage(Stage stage) {
         this.stage = stage;
         //the first time the window is shown, it is the login (small) size
@@ -193,13 +96,137 @@ public class MainController implements IListener {
         stage.setOnCloseRequest(we -> reminderService.Stop());
     }
 
+    @FXML
+    private final SidePanelControl sidePanel;
+
+    @FXML
+    BorderPane borderPane;
+ 
+    @FXML
+    public void initialize() throws AppointmentException, ValidationException {
+
+        setupLogin();
+        sidePanel.addListener(this);
+    }
+
+    @Override
+    public void actionPerformed(Commands command, Object... args) {
+
+        try {
+            switch (command) {
+                case authenticate:
+
+                    borderPane.setLeft(sidePanel);
+                    sidePanel.load();
+                    sidePanel.showCalendar();
+
+                    startReminderService();
+
+                    break;
+                case appointmentCreated:
+                case appointmentDeleted:
+                    sidePanel.showCalendar();
+                    break;
+                case validationException:
+                    if (args != null && args.length > 0) {
+                        String message = String.valueOf(args[0]);
+                        addSystemMessage(message);
+                    }
+                    break;
+                case messageAck:
+                    borderPane.setTop(null);
+                    break;
+                case addControl:
+                    addMainControl((IMainPanelView) args[0]);
+                    break;
+                case monthPickerShown:
+                    showMonthPicker(args);
+                    break;
+                case monthPickerSelected:
+                        selectMonth(args);
+                    break;
+
+            }
+        } catch (AppointmentException ex) {
+            ErrorControl control = new ErrorControl(ex);
+            control.show();
+        }
+    }
+
+    private void startReminderService() {
+
+        reminderService.getHasReminders().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                return;
+            }
+            Platform.runLater(()
+                    -> {
+                ArrayList<Reminder> list = reminderService.getReminders();
+                String header = "You have the following appointments: " + "\n" + "\n";
+                String message = "";
+
+                for (Reminder rem : list) {
+                    DateTimeFormatter format = DateTimeFormatter.ofPattern("hh:mm a");
+
+                    message
+                            += rem.getAppointment().getTitle() + " with "
+                            + rem.getAppointment().getCustomer().getName() + " at "
+                            + rem.getAppointment().getStart().format(format) + "\n";
+                }
+
+                if (message.isEmpty()) {
+                    return;
+                }
+                message = header + message;
+
+                AlertContent content = new AlertContent();
+                content.setTitle("Appointment Notice");
+                content.setMessage("Customer appointments");
+                content.setLargeContent(message);
+                Alert alert = alertFactory.create(new ReminderAlertBuilder(), content);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    list.forEach((rem) -> {
+                        reminderService.Acknowledge(rem);
+                    });
+                }
+            }
+            );
+        });
+        reminderService.Start();
+    }
+
+    private void showMonthPicker(Object[] args) {
+        if (args != null && args.length == 2) {
+            double x = (double) args[0];
+            double y = (double) args[1];
+            MonthPickerDialog dialog = new MonthPickerDialog();
+            dialog.addListener(this);
+            if (x != 0 && y != 0) {
+                dialog.setLayoutX(x);
+                dialog.setLayoutY(y);
+            }
+
+            ICalendarControl control = (ICalendarControl) aPane.getChildren().get(0);
+            dialog.show(control.getActualFirstDate());
+        }
+    }
+
+    private void selectMonth(Object[] args) {
+        if (args != null && args.length == 1) {
+            ZonedDateTime date = (ZonedDateTime) args[0];
+            ICalendarControl control = (ICalendarControl) aPane.getChildren().get(0);
+            control.AddMonth(date);
+            this.addMainControl((IMainPanelView) control);
+        }
+    }
+    
     private void setupLogin() {
         login.addListener(this);
         borderPane.setCenter(login);
     }
-
-    AnchorPane aPane = new AnchorPane();
-
+ 
     public void addMainControl(IMainPanelView view) {
 
         view.addListener(this);
@@ -331,18 +358,4 @@ public class MainController implements IListener {
 
     }
 
-    private static MainController instance;
-
-    public static MainController getInstance() {
-        return instance;
-    }
-
-    public ReadOnlyObjectProperty<Bounds> getMainPanelBoundsProperty() {
-        return aPane.layoutBoundsProperty();
-        // return borderPane.getCenter().boundsInParentProperty();
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
 }

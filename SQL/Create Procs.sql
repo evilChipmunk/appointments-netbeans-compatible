@@ -9,7 +9,7 @@ CREATE procedure sp_DeleteUserById
 	IN id int
 )
 
-DELETE FROM User WHERE userId = id; 
+DELETE FROM user WHERE userId = id; 
 
 /*-------------------------------------CREATE PROC------------------------------------------*/
 DELIMITER $$
@@ -316,7 +316,7 @@ CREATE procedure sp_DeleteCustomerById
 )
 
 BEGIN
-	DELETE FROM reminder WHERE AppointmentId IN(SELECT AppointmentId FROM Customer WHERE CustomerId = id);
+	DELETE FROM reminder WHERE AppointmentId IN(SELECT AppointmentId FROM customer WHERE CustomerId = id);
 	DELETE FROM appointment WHERE CustomerId = id;
 	DELETE FROM customer WHERE CustomerId = id;
 END$$
@@ -342,6 +342,24 @@ CREATE PROCEDURE sp_GetCustomers
  
 SELECT CustomerId as Id, CustomerName as Name, AddressId, Active, CreatedBy, CreateDate, LastUpdateBy as LastUpdatedBy, LastUpdate
 FROM customer;
+
+
+/*-------------------------------------CREATE PROC------------------------------------------*/
+DROP procedure IF EXISTS sp_CustomerAppointmentCountWithOtherUsers;
+CREATE PROCEDURE sp_CustomerAppointmentCountWithOtherUsers
+( 
+	IN userName VARCHAR(50),
+    IN customerId int
+)
+ 
+SELECT COUNT(*)
+FROM customer c 
+INNER JOIN appointment a
+ON c.CustomerId = a.CustomerId
+WHERE c.customerid = customerId
+AND a.CreatedBy != userName;
+
+
 
 
 /*---------------------------------------Appointment------------------------------------------------*/
@@ -435,25 +453,29 @@ DROP procedure IF EXISTS sp_GetMonthlyAppointments;
 CREATE PROCEDURE sp_GetMonthlyAppointments
 (
 	IN startingDate datetime,
-    IN endingDate datetime
+    IN endingDate datetime,
+	IN userName varchar(50)
 )
  
 
 SELECT AppointmentId as Id, CustomerId, Title, Description, Location, Contact, URL, Start, End, 
 CreatedBy, CreateDate, LastUpdateBy as LastUpdatedBy, LastUpdate
 FROM appointment 
-WHERE Start BETWEEN startingDate AND endingDate;
+WHERE Start BETWEEN startingDate AND endingDate
+AND CreatedBy = userName;
   
  /*-------------------------------------CREATE PROC------------------------------------------*/
 DROP procedure IF EXISTS sp_GetAppointments;
 CREATE PROCEDURE sp_GetAppointments
 ( 
+	IN userName VARCHAR(50)
 )
  
 
 SELECT AppointmentId as Id, CustomerId, Title, Description, Location, Contact, URL, Start, End, 
 CreatedBy, CreateDate, LastUpdateBy as LastUpdatedBy, LastUpdate
-FROM appointment;
+FROM appointment
+WHERE CreatedBy = userName;
  
  
 /*---------------------------------------Reminder------------------------------------------------*/

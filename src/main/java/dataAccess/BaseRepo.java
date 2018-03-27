@@ -10,13 +10,12 @@ import models.BaseEntity;
 
 import java.sql.*;
 import java.time.*;
-import java.util.*;
-import models.Customer;
+import java.util.*; 
 
 public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
 
     protected final Configuration config;
-    private final IApplicationState applicationState;
+    protected final IApplicationState applicationState;
     private final ISqlRetryPolicy retryPolicy;
 
     BaseRepo(Configuration config, IApplicationState applicationState, ISqlRetryPolicy retryPolicy) {
@@ -180,6 +179,25 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
         } catch (SQLException ex) {
             throw new AppointmentException("Error executing single", ex);
         }
+    }
+    
+    Object executeSingleObject(String procName, ArrayList<ParameterInfo> params){
+ 
+        Object ret = null;
+        try (Connection con = getConnection()) {
+            try (CallableStatement ps = createExecuteStatement(procName, params, con);) {
+                try (ResultSet results = ps.executeQuery()) {
+                     if (results.next()){
+                         ret = results.getObject(1);
+                     }
+                }
+            } catch (SQLException ex) {
+                throw new AppointmentException("Error executing single", ex);
+            }
+        } catch (SQLException ex) {
+            throw new AppointmentException("Error executing single", ex);
+        }
+        return ret;
     }
     
     protected abstract Type getEntityType();

@@ -111,4 +111,8 @@ public class SidePanelControl extends GridPane {
     public void showCalendar() throws AppointmentException {
         calendar(null);
     }
+    
+    public void load(){
+        report.load();
+    }
 }

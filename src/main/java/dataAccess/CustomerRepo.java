@@ -79,4 +79,19 @@ public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo {
         ArrayList<ParameterInfo> dictionary = new ArrayList<>();
         return executeResultList(statement, dictionary);
     }
+
+    @Override
+    public boolean hasAppointmentsWithAnotherUser(int customerId) {
+        String statement = "sp_CustomerAppointmentCountWithOtherUsers";
+        ArrayList<ParameterInfo> dictionary = new ArrayList<>();
+        dictionary.add(new ParameterInfo("userName", applicationState.getLoggedInUser().getName()));
+        dictionary.add(new ParameterInfo("customerId", customerId));
+        
+        long count = 0;
+        Object result = executeSingleObject(statement, dictionary); 
+        if (result != null){
+            count = (long)result;            
+        }
+        return count > 0;
+    }
 }

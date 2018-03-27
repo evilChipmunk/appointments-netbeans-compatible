@@ -29,6 +29,9 @@ public class ReportControl extends MainPanelControl {
 
     private final IReportContext reportContext;
     private final IApplicationState state;
+    private final Label label = new Label();
+    private final HBox hbox = new HBox();
+    private final ComboBox cboReports = new ComboBox();
 
     public ReportControl(IReportContext reportContext, IApplicationState state) {
 
@@ -42,12 +45,8 @@ public class ReportControl extends MainPanelControl {
     @FXML
     public void initialize() {
 
-        Label label = new Label();
         label.setText("Select Report: ");
 
-        HBox hbox = new HBox();
-
-        ComboBox cboReports = new ComboBox();
 
         ObservableList<String> reports = FXCollections.observableArrayList();
         reports.add("Appointments By Month");
@@ -79,6 +78,10 @@ public class ReportControl extends MainPanelControl {
         hbox.getChildren().add(label);
         hbox.getChildren().add(cboReports);
         this.setTop(hbox);
+    }
+    
+    public void load(){
+        
         cboReports.getSelectionModel().select(0);
     }
 

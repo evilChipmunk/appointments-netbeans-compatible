@@ -4,6 +4,7 @@ import application.controllers.MainController;
 import application.controls.MainPanelControl;
 import application.factories.MonthControlFactory;
 import application.messaging.Commands; 
+import application.services.IApplicationState;
 import application.services.ICalendarContext;
 import application.services.IScheduler;
 import exceptions.AppointmentException;
@@ -26,7 +27,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.TreeSet; 
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -55,22 +56,24 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
     private final VBox vLeft = new VBox();
     private final VBox vRight = new VBox();
 
+    private final ICalendarContext context;
+    private final IScheduler scheduler;
+    private final IApplicationState state;
     private ZonedDateTime actualFirstDate;
     private ZonedDateTime monthDisplayBeginningDate;
     private ZonedDateTime monthDisplayEndingDate;
     private IMonthPart currentMonth;
     private SortedSet<Appointment> sortedAppointments;
     private Month selectedMonth;
-    private final ICalendarContext context;
-    private final IScheduler scheduler;
     private ReadOnlyObjectProperty<Bounds> mainBounds;
     
 
-    public CalendarControl(ICalendarContext context, IScheduler scheduler, MonthControlFactory monthFactory) {
+    public CalendarControl(ICalendarContext context, IScheduler scheduler, MonthControlFactory monthFactory, IApplicationState state) {
         this.context = context;
         this.scheduler = scheduler;
         this.monthFactory = monthFactory;
         this.actualFirstDate = ZonedDateTime.now();
+        this.state = state;
 
         setupCSS();
 
@@ -449,8 +452,7 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
     }
     
     private void navigateWeek(ZonedDateTime date){
-          
-        date = getFloorDate(date);
+           
         selectedMonth = actualFirstDate.getMonth();  
         this.lblMonth.setText(new MyDatePick(actualFirstDate.getYear(), actualFirstDate.getMonthValue()).toString());
 
@@ -479,8 +481,10 @@ public class CalendarControl extends MainPanelControl implements ICalendarContro
     private SortedSet<Appointment> getAppointments(ZonedDateTime startingDate, ZonedDateTime endingDate) throws AppointmentException {
 
         ArrayList<Appointment> appointments = context.getMonthlyAppointments(startingDate, endingDate);
+        
         appointments.sort(Comparator.naturalOrder());
         return new TreeSet<>(appointments);
+       // return new TreeSet<>(appointments.stream().filter(x -> x.getAudit().getCreatedBy().equals(state.getLoggedInUser().getName())).collect(Collectors.toList()));
     }
  
     @Override

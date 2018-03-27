@@ -53,15 +53,13 @@ public class UserRepo extends BaseRepo<User> implements IUserRepo {
     @Override
     protected User mapEntity(ResultSet results, Includes... includes) throws SQLException {
 
-        if (results.next()) {
-            int id = results.getInt("Id");
-            String name = results.getString("Name");
-            String password = results.getString("Password");
-            boolean active = results.getBoolean("Active");
-            AuditInfo audit = super.createAudit(results);
-            return new User(id, name, password, active, audit);
-        }
-        return null;
+        int id = results.getInt("Id");
+        String name = results.getString("Name");
+        String password = results.getString("Password");
+        boolean active = results.getBoolean("Active");
+        AuditInfo audit = super.createAudit(results);
+        return new User(id, name, password, active, audit);
+
     }
 
     @Override

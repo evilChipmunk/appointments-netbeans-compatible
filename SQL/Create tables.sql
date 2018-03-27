@@ -13,7 +13,7 @@ use U05bhH;
 CREATE TABLE user
 ( 
      UserId INT PRIMARY KEY,
-	 UserName varchar(50),
+	 UserName varchar(50) UNIQUE,
 	 Password varchar(50),
 	 Active bit,
 	 CreateBy varchar(50),

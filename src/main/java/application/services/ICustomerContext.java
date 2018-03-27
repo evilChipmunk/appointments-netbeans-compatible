@@ -20,4 +20,6 @@ public interface ICustomerContext {
     ArrayList<Country> getCountries() throws AppointmentException, ValidationException;
 
     boolean delete(Customer customer) throws AppointmentException;
+    
+    boolean hasAppointmentsWithAnotherUser(int customerId);
 }

@@ -24,12 +24,7 @@ public class CalendarContext implements ICalendarContext {
     @Override
     public ArrayList<Customer> getCustomers() throws AppointmentException, ValidationException {
         return customerRepo.getCustomers();
-    }
-
-    @Override
-    public ArrayList<Appointment> getAppointments(int customerId) throws AppointmentException, ValidationException {
-        return appointmentRepo.getAppointments(customerId);
-    }
+    } 
 
     @Override
     public ArrayList<Appointment> getAppointments() throws AppointmentException, ValidationException {

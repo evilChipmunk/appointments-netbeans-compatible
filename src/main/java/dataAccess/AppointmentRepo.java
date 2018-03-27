@@ -97,6 +97,7 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
     public ArrayList<Appointment> getAppointments() throws AppointmentException, ValidationException {
         String statement = "sp_GetAppointments";
         ArrayList<ParameterInfo> dictionary = new ArrayList<>();
+        dictionary.add(new ParameterInfo("userName", applicationState.getLoggedInUser().getName()));
 
         return executeResultList(statement, dictionary);
     }
@@ -112,8 +113,9 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
 
         dictionary.add(new ParameterInfo("startingDate", utcStart));
         dictionary.add(new ParameterInfo("endingDate", utcEnd));
+        dictionary.add(new ParameterInfo("userName", applicationState.getLoggedInUser().getName()));
 
-        return executeResultList(statement, dictionary);
+         return executeResultList(statement, dictionary); 
 
     }
 }

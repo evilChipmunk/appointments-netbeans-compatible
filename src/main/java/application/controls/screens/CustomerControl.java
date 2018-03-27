@@ -114,9 +114,31 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
         }
     }
  
+    private boolean validateDelete(int customerId) {
+
+        if (service.hasAppointmentsWithAnotherUser(customerId)) {
+
+            AlertContent content = new AlertContent();
+            content.setTitle("Sorry!");
+            content.setMessage("This customer cannot be deleted. Another user has an appointment scheduled with this customer");
+            content.setAlertType(AlertType.Warning);
+            Alert alert = alertFactory.create(new CustomerDeleteAlertBuilder(), content);
+            alert.showAndWait();
+            return false;
+        }
+        return true;
+    }
+    
     @FXML
     public void delete(ActionEvent event) throws AppointmentException {
 
+        Customer customer = viewModel.getCustomer();
+        
+        if (!validateDelete(customer.getId())){
+            return;
+        }
+        
+            
         AlertContent content = new AlertContent();
         content.setTitle("Are you sure?");
         content.setMessage("This will delete all of the customer's appointments too!");
@@ -127,8 +149,7 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
 
-            Customer customer = viewModel.getCustomer();
-
+             
             boolean deleted = service.delete(customer);
             if (deleted) {
 

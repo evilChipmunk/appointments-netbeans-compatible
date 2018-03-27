@@ -63,4 +63,10 @@ public class CustomerContext implements ICustomerContext {
     public boolean delete(Customer customer) throws AppointmentException {
         return repo.delete(customer);
     }
+    
+    @Override
+    public boolean hasAppointmentsWithAnotherUser(int customerId){
+        return repo.hasAppointmentsWithAnotherUser(customerId);
+    }
+       
 }

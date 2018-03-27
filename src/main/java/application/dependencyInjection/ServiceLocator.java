@@ -145,7 +145,8 @@ public class ServiceLocator {
             ICalendarContext context = Resolve(ICalendarContext.class);
             IScheduler scheduler = Resolve(IScheduler.class);
             MonthControlFactory factory = Resolve(MonthControlFactory.class);
-            return new CalendarControl(context, scheduler, factory);
+            IApplicationState state = Resolve(IApplicationState.class);
+            return new CalendarControl(context, scheduler, factory, state);
         });
         map.put(CustomerControl.class, () -> {
             ICustomerContext service = Resolve(ICustomerContext.class);
