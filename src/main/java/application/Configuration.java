@@ -7,12 +7,12 @@ public class Configuration {
     }
 
     public String getConnectionString() {
-        return  "jdbc:mysql://52.206.157.109/U05bhH?autoReconnect=true&useSSL=false";
+        return    "jdbc:mysql://localhost:3306/appointments?autoReconnect=true&useSSL=false";
     }
 
-    public String getConnectionUserName(){return "U05bhH";}
+    public String getConnectionUserName(){return "mysqluser";} 
 
-    public String getConnectionPassword() {return "53688456792";}
+    public String getConnectionPassword() {return "mysql";} 
 
     public int getRetry() {
         return 3;
