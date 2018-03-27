@@ -2,11 +2,12 @@ package dataAccess;
 
 import application.Configuration;
 import application.services.IApplicationState;
+import java.lang.reflect.Type;
 import models.IncrementType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.ArrayList; 
 
 public class IncrementTypeRepo extends BaseRepo<IncrementType> implements IIncrementTypeRepo {
 
@@ -39,5 +40,11 @@ public class IncrementTypeRepo extends BaseRepo<IncrementType> implements IIncre
         int id = results.getInt("id");
         String description = results.getString("Description");
         return new IncrementType(id, description);
+    }
+    
+    
+    @Override
+    protected Type getEntityType() {
+      return IncrementType.class;
     }
 }

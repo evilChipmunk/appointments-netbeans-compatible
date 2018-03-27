@@ -4,12 +4,14 @@ import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.AuditInfo;
 import models.BaseEntity;
 
 import java.sql.*;
 import java.time.*;
 import java.util.*;
+import models.Customer;
 
 public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
 
@@ -24,19 +26,25 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
         this.retryPolicy = retryPolicy;
     }
 
+
     @Override
     public T getById(int id, Includes... includes) throws AppointmentException {
-        try (Connection conn = getConnection()) {
-            String statement = "CALL " + getByIdProc() + "(?);";
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-
-                ps.setInt(1, id);
-                T entity = serialize(ps.executeQuery(), includes);
-                return entity;
-            }
-        } catch (SQLException ex) {
-            throw new AppointmentException("Error getting data from database", ex);
-        }
+        
+        
+        ArrayList<ParameterInfo> params = new ArrayList<>();
+        params.add(new ParameterInfo("id", id));
+        return executeResultSingle(getByIdProc(), params, includes);
+//        try (Connection conn = getConnection()) {
+//            String statement = "CALL " + getByIdProc() + "(?);";
+//            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+//
+//                ps.setInt(1, id);
+//                T entity = serialize(ps.executeQuery(), includes);
+//                return entity;
+//            }
+//        } catch (SQLException ex) {
+//            throw new AppointmentException("Error getting data from database", ex);
+//        }
     }
 
     @Override
@@ -59,6 +67,9 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
                     //  int id = ps.getInt("id");
                     int id = results.getInt("id");
                     entity.setId(id);
+                    
+                    Cache.add(entity, entity.getClass());
+                    
                     return entity;
                 }
             }
@@ -80,6 +91,8 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
                 ps.setInt(1, entity.getId());
                 ps.execute();
 
+                Cache.remove(entity, entity.getClass());
+                
                 return true;
             }
         } catch (SQLException ex) {
@@ -133,12 +146,33 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
         params.add(new ParameterInfo("lastUpdate", DatabaseDateTimeConverter.getSqlTimestamp(entity.getAudit().getLastUpdate())));
     }
 
-    T executeResultSingle(String procName, ArrayList<ParameterInfo> params) throws AppointmentException {
+    T executeResultSingle(String procName, ArrayList<ParameterInfo> params, Includes... includes) throws AppointmentException {
 
+        //if cached object found then just return it. Else fetch it from the database
+        if (includes == null || includes.length == 0) { //for now only possible to do this with objects that do not have includes
+
+            ParameterInfo idFilter = params.stream().filter(x -> x.getName().equalsIgnoreCase("id")).findFirst().orElse(null);
+            if (idFilter != null && idFilter.getValue() != null) {
+                try {
+                    Object idObj = idFilter.getValue();
+                    int id = (int)idObj;
+                    
+                    T found = Cache.find(id, getEntityType());
+                    if (found != null) {
+                        return found;
+                    }
+                } catch (Exception parseError) {
+                    // eat the error here and let it fall down to the normal 
+                    // block below. However that will probably error too. 
+                } 
+            }
+        }
         try (Connection con = getConnection()) {
             try (CallableStatement ps = createExecuteStatement(procName, params, con);) {
                 try (ResultSet results = ps.executeQuery()) {
-                    return serialize(results);
+                    T entity = serialize(results, includes);
+                    Cache.add(entity, entity.getClass());
+                    return entity;
                 }
             } catch (SQLException ex) {
                 throw new AppointmentException("Error executing single", ex);
@@ -147,13 +181,22 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
             throw new AppointmentException("Error executing single", ex);
         }
     }
-
-    ArrayList<T> executeResultList(String procName, ArrayList<ParameterInfo> params) throws AppointmentException {
-
+    
+    protected abstract Type getEntityType();
+    
+    ArrayList<T> executeResultList(String procName, ArrayList<ParameterInfo> params, Includes... includes) throws AppointmentException {
+ 
+        ArrayList<T> list = Cache.getList(getEntityType());
+        if (list != null){
+            return list;
+        }
+        
         try (Connection con = getConnection()) {
             try (CallableStatement ps = createExecuteStatement(procName, params, con);) {
                 try (ResultSet results = ps.executeQuery()) {
-                    return serializeList(results);
+                    ArrayList<T> entities =  serializeList(results, includes);
+                    Cache.add((ArrayList<BaseEntity>) entities, getEntityType());
+                    return entities;
                 }
             } catch (SQLException ex) {
                 throw new AppointmentException("Error executing list", ex);
@@ -231,3 +274,4 @@ public abstract class BaseRepo<T extends BaseEntity> implements IRepo<T> {
         });
     }
 }
+ 

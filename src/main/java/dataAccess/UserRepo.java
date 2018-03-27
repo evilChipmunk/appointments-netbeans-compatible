@@ -4,12 +4,13 @@ import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.AuditInfo;
 import models.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.ArrayList; 
 
 public class UserRepo extends BaseRepo<User> implements IUserRepo {
 
@@ -30,6 +31,12 @@ public class UserRepo extends BaseRepo<User> implements IUserRepo {
     @Override
     protected String getSaveProc() {
         return "sp_SaveUser";
+    }
+    
+    
+    @Override
+    protected Type getEntityType() {
+      return User.class;
     }
 
     @Override

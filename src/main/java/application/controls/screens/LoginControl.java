@@ -114,7 +114,7 @@ public class LoginControl extends VBox {
                 throw new Exception();
             }
             userService.registerUser(txtUserName.getText(), txtPassword.getText());
-            userService.authenticateUser(txtUserName.getText(), txtPassword.getText());
+            authenticateUser();
             listener.actionPerformed(Commands.authenticate);
         } catch (Exception ex) {
             AlertContent content = new AlertContent();

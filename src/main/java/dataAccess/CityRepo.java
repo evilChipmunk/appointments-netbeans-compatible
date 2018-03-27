@@ -4,13 +4,14 @@ import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.AuditInfo;
 import models.City;
 import models.Country;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.ArrayList; 
 
 public class CityRepo extends BaseRepo<City> implements ICityRepo {
 
@@ -36,6 +37,11 @@ public class CityRepo extends BaseRepo<City> implements ICityRepo {
         return "sp_SaveCity";
     }
 
+    @Override
+    protected Type getEntityType() {
+      return City.class;
+    }
+    
     @Override
     protected ArrayList<ParameterInfo> getSaveParams(City entity) {
         ArrayList<ParameterInfo> dictionary = new ArrayList<>();

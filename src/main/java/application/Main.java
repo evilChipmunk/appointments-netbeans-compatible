@@ -3,6 +3,10 @@ package application;
 import application.controllers.MainController;
 import application.controls.screens.ErrorControl;
 import application.dependencyInjection.ServiceLocator;
+import dataAccess.Cache;
+import dataAccess.ICityRepo;
+import dataAccess.ICountryRepo;
+import dataAccess.ICustomerRepo;
 import exceptions.ValidationException;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -30,25 +34,41 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 
 import static java.lang.Math.random;
-import java.util.Arrays;
-import javafx.scene.paint.RadialGradient;
+import java.util.Arrays; 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main extends Application {
+
+    private ServiceLocator injector;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Thread.setDefaultUncaughtExceptionHandler(Main::showError);
+        Thread.setDefaultUncaughtExceptionHandler(Main::showError); 
+        this.injector = ServiceLocator.getInstance();
+        
         primaryStage.setTitle("Scheduler");
         primaryStage.centerOnScreen();
-
+        
+        Thread cacheThread = new Thread(() -> { loadCacheData(); });  
+        cacheThread.start();
+              //  cacheThread.join();
+        
         Scene primaryScene = getPrimaryScene(primaryStage);
+
+        
 
         Timeline timeline = new Timeline();
 
         timeline.setOnFinished((ActionEvent event) -> {
             primaryStage.setScene(null);
             primaryStage.setScene(primaryScene);
+            
+//            try {
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//            }
             primaryStage.show();
         });
         Scene splashScreen = getSplash(timeline);
@@ -57,10 +77,22 @@ public class Main extends Application {
         primaryStage.show();
 
     }
+    
+    private void loadCacheData(){
+        
+        ICountryRepo countryRepo = injector.Resolve(ICountryRepo.class);
+         countryRepo.getCountries();
+         
+         ICityRepo cityRepo = injector.Resolve(ICityRepo.class);
+         cityRepo.getCities();
+         
+         ICustomerRepo custRepo = injector.Resolve(ICustomerRepo.class);
+         custRepo.getCustomers();
+        
+    }
 
     private Scene getPrimaryScene(Stage primaryStage) throws java.io.IOException {
 
-        ServiceLocator injector = ServiceLocator.getInstance();
 
         MainController controller = injector.Resolve(MainController.class);
         FXMLLoader fxmlLoader = new FXMLLoader();

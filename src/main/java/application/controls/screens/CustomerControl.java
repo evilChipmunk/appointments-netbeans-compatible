@@ -6,7 +6,7 @@ import application.alerts.AlertType;
 import application.alerts.CustomerDeleteAlertBuilder;
 import application.controls.AutoCompleteTextField;
 import application.controls.IMainPanelView;
-import application.controls.MainPanelControl;
+import application.controls.MainPanelControl; 
 import application.controls.ScreenLoader;
 import application.services.ICustomerContext;
 import application.viewModels.CustomerViewModel;
@@ -22,9 +22,9 @@ import javafx.scene.control.*;
 import models.*;
 
 import java.util.ArrayList;
-import java.util.Optional;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.geometry.Bounds;
+import java.util.Optional; 
+import javafx.beans.property.ReadOnlyObjectProperty; 
+import javafx.geometry.Bounds; 
 
 public class CustomerControl extends MainPanelControl implements IMainPanelView {
 
@@ -99,16 +99,21 @@ public class CustomerControl extends MainPanelControl implements IMainPanelView 
             //if customer can't be saved due to missing information
             //then don't allow this button to be clicked
             Customer customer = viewModel.getCustomer();
-
-            service.saveCustomer(customer);
-
-            updateCustomerList(customer);
-            sortCustomerList();
+ 
+             
+            executeLongAction((Void x) -> 
+                {
+                    service.saveCustomer(customer);
+                    updateCustomerList(customer);
+                    sortCustomerList();
+                }
+            );
+ 
         } catch (ValidationException vex) {
             this.showValidationMessage(vex.getMessage());
         }
     }
-
+ 
     @FXML
     public void delete(ActionEvent event) throws AppointmentException {
 

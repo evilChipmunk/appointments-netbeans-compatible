@@ -3,6 +3,7 @@ package dataAccess;
 import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.*;
 
 import java.sql.ResultSet;
@@ -59,6 +60,11 @@ public class AddressRepo extends BaseRepo<Address> implements IAddressRepo {
 
         addAuditParams(dictionary, entity);
         return dictionary;
+    }
+
+    @Override
+    protected Type getEntityType() {
+      return Address.class;
     }
 
 }

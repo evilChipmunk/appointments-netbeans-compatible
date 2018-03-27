@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 public class ReminderService implements IReminderService {
 
@@ -42,7 +43,7 @@ public class ReminderService implements IReminderService {
             public void run() {
                 setReminders();
             }
-        }, 100, config.getReminderCheck());
+        }, 0, config.getReminderCheck());
     }
 
     @Override
@@ -87,7 +88,11 @@ public class ReminderService implements IReminderService {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime cutOff = now.plusMinutes(config.getReminderRange());
 
-        return repo.getReminders(now, cutOff, state.getLoggedInUser().getName());
+        ArrayList<Reminder> rems =  repo.getReminders(now, cutOff, state.getLoggedInUser().getName());
+        
+        return new ArrayList( rems.stream()
+                .filter(x -> x.getAppointment().getStart().isAfter(now) && x.getAppointment().getStart().isBefore(cutOff))
+                .collect(Collectors.toList()));
     }
 
     @Override

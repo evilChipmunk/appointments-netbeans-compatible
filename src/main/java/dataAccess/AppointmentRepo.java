@@ -4,6 +4,7 @@ import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.Appointment;
 import models.AuditInfo;
 import models.Customer;
@@ -11,7 +12,7 @@ import models.Customer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.*; 
 
 public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointmentRepo {
 
@@ -35,6 +36,11 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
     @Override
     protected String getSaveProc() {
         return "sp_SaveAppointment";
+    }
+    
+    @Override
+    protected Type getEntityType() {
+      return Appointment.class;
     }
 
     @Override
@@ -69,7 +75,10 @@ public class AppointmentRepo extends BaseRepo<Appointment> implements IAppointme
         ZonedDateTime start = DatabaseDateTimeConverter.getZoneDateTime(results.getTimestamp("Start"));
         ZonedDateTime end = DatabaseDateTimeConverter.getZoneDateTime(results.getTimestamp("End"));
 
-        Customer customer = customerRepo.getById(customerId);
+        ArrayList<Customer> cachedCustomers = customerRepo.getCustomers();
+//        Customer customer = customerRepo.getById(customerId);
+        Customer customer = cachedCustomers.stream().filter(x -> x.getId() == customerId).findFirst().orElse(null);
+        
         AuditInfo audit = createAudit(results);
         boolean isPreExisting = true;
         return new Appointment(id, customer, title, description, location, contact, url, start, end, audit, config, isPreExisting);

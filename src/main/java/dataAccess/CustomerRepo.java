@@ -4,6 +4,7 @@ import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.Address;
 import models.AuditInfo;
 import models.Customer;
@@ -34,6 +35,11 @@ public class CustomerRepo extends BaseRepo<Customer> implements ICustomerRepo {
     @Override
     protected String getSaveProc() {
         return "sp_SaveCustomer";
+    }
+    
+    @Override
+    protected Type getEntityType() {
+      return Customer.class;
     }
 
     @Override

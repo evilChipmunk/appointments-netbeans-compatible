@@ -4,6 +4,7 @@ import application.Configuration;
 import application.services.IApplicationState;
 import exceptions.AppointmentException;
 import exceptions.ValidationException;
+import java.lang.reflect.Type;
 import models.*;
 
 import java.sql.ResultSet;
@@ -36,6 +37,11 @@ public class ReminderRepo extends BaseRepo<Reminder> implements IReminderRepo {
     @Override
     protected String getSaveProc() {
         return "sp_SaveReminder";
+    }
+    
+    @Override
+    protected Type getEntityType() {
+      return Reminder.class;
     }
 
     @Override

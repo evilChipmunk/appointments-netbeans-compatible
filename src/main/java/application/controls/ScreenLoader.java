@@ -23,7 +23,7 @@ public class ScreenLoader {
         }
     }
 
-    public static void loadNewStage(String path, Object root, Object controller, String title)  {
+    public static Stage loadNewStage(String path, Object root, Object controller, String title)  {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setRoot(root);
         fxmlLoader.setLocation(root.getClass().getResource(path));
@@ -40,9 +40,11 @@ public class ScreenLoader {
         stage.setTitle(title);
         stage.setScene(scene);
         stage.show();
+        
+        return stage;
     }
 
-    public static void loadNewStage(Parent root, double width, double height, Modality modaility )
+    public static Stage loadNewStage(Parent root, double width, double height, Modality modaility )
     {
         Scene scene  = new Scene(root, width, height);
 
@@ -51,6 +53,8 @@ public class ScreenLoader {
         stage.initModality(modaility);
         stage.setScene(scene);
         stage.show();
+        
+        return stage;
 
     }
 }

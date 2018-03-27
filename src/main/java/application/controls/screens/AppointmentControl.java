@@ -177,10 +177,8 @@ public class AppointmentControl extends MainPanelControl implements IMainPanelVi
             } else {
                 listener.actionPerformed(Commands.appointmentCreated);
             }
-        } catch (ScheduleOverlapException ovEx) {
+        } catch (ScheduleOverlapException | ValidationException ovEx) {
             this.showValidationMessage(ovEx.getMessage());
-        } catch (ValidationException vex) {
-            this.showValidationMessage(vex.getMessage());
         }
     }
 
