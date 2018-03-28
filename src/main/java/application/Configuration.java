@@ -1,3 +1,4 @@
+
 package application;
 
 public class Configuration {
@@ -62,6 +63,10 @@ public class Configuration {
 
     public long getReminderRange() {
         return 15;
+    }
+    
+    public int getTimeIncrement() {
+         return 15;
     }
 }
 
